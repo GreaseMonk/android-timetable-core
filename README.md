@@ -48,5 +48,6 @@ Push to maven central is due when primary goals are achieved, check back later.
 ## Dependencies
 
 [FastAdapter](https://github.com/mikepenz/fastadapter) by Mike Penz. Used to display the rows.
+
 v7 Recyclerview by the Android open source project.
 
