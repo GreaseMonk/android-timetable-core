@@ -6,7 +6,7 @@ import java.util.Date;
  * Created by Wiebe Geertsma on 14-11-2016.
  * E-mail: e.w.geertsma@gmail.com
  */
-public abstract interface AbstractRowItem
+public interface AbstractRowItem
 {
 	/**
 	 * Get the start date of this employee's project planning

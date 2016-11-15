@@ -3,6 +3,7 @@ package com.greasemonk.timetable;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,35 +18,25 @@ import android.widget.TextView;
 import com.greasemonk.timetable.rows.InitialsRow;
 import com.mikepenz.fastadapter.adapters.FastItemAdapter;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Wiebe Geertsma on 14-11-2016.
  * E-mail: e.w.geertsma@gmail.com
  */
-public class TimeTable extends FrameLayout
+public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements PagingDelegate
 {
-	private static final int SWIPE_THRESHOLD = 100;
-	private static final int SWIPE_VELOCITY_THRESHOLD = 100;
-	
-	public enum TimePeriod
-	{
-		DAY, WEEK, MONTH
-	}
-	
 	private View view;
-	private RecyclerView recyclerView;
+	private PagingRecyclerView recyclerView;
+	private List<T> items;
 	private List<InitialsRow> rows;
 	private FastItemAdapter<InitialsRow> adapter;
-	private TimePeriod timePeriod = TimePeriod.DAY;
 	private ProgressBar progressBar;
 	private Calendar left = Calendar.getInstance();
 	private Calendar right = Calendar.getInstance();
 	private TextView[] textViews = new TextView[7];
-	private GestureDetector gestureDetector;
+	
 	
 	private int columnCount;
 	
@@ -77,7 +68,7 @@ public class TimeTable extends FrameLayout
 	private void init()
 	{
 		view = inflate(getContext(), com.greasemonk.timetable.R.layout.paging_timetable_view, null);
-		recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+		recyclerView = (PagingRecyclerView) view.findViewById(R.id.recycler_view);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 		recyclerView.setItemAnimator(new DefaultItemAnimator());
 		
@@ -92,42 +83,27 @@ public class TimeTable extends FrameLayout
 		progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
 		progressBar.setVisibility(GONE);
 		
+		view.findViewById(R.id.btn_left).setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View view)
+			{
+				pageLeft();
+			}
+		});
+		view.findViewById(R.id.btn_right).setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View view)
+			{
+				pageRight();
+			}
+		});
+		
 		left.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 		right.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
 		
-		gestureDetector = new GestureDetector(getContext(),new GestureDetector.SimpleOnGestureListener(){
-			@Override
-			public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
-			{
-				boolean result = false;
-				try {
-					float diffY = e2.getY() - e1.getY();
-					float diffX = e2.getX() - e1.getX();
-					if (Math.abs(diffX) > Math.abs(diffY)) {
-						if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
-							if (diffX > 0) {
-								pageLeft();
-							} else {
-								pageRight();
-							}
-						}
-						result = true;
-					}
-					else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
-						if (diffY > 0) {
-							//onSwipeBottom();
-						} else {
-							//onSwipeTop();
-						}
-					}
-					result = true;
-					
-				} catch (Exception exception) {
-					exception.printStackTrace();
-				}
-				return result;
-			}
-		});
+		
 		
 		addView(view);
 		requestLayout();
@@ -138,7 +114,6 @@ public class TimeTable extends FrameLayout
 		left.add(Calendar.WEEK_OF_YEAR, -1);
 		right.add(Calendar.WEEK_OF_YEAR, -1);
 		update();
-		requestLayout();
 	}
 	
 	public void pageRight()
@@ -146,7 +121,6 @@ public class TimeTable extends FrameLayout
 		left.add(Calendar.WEEK_OF_YEAR, 1);
 		right.add(Calendar.WEEK_OF_YEAR, 1);
 		update();
-		requestLayout();
 	}
 	
 	public void setColumnCount(int columnCount)
@@ -154,30 +128,60 @@ public class TimeTable extends FrameLayout
 		this.columnCount = columnCount;
 	}
 	
-	public void update()
+	private void update()
 	{
-		setRows(rows);
+		if(items != null)
+			update(items);
 	}
 	
-	public void update(Iterable<AbstractRowItem> list) 
+	public void update(@NonNull List<T> items)
 	{
+		this.items = items;
 		rows = new ArrayList<>();
-		for(AbstractRowItem item : list)
+		for(AbstractRowItem item : items)
 		{
-			rows.add(new InitialsRow(timePeriod, item.getPlanningStart(), item.getPlanningEnd(), item));
+			// Left and Right are the TimeTable's date range
+			boolean planStartsBeforeLeft = left.getTime().after(item.getPlanningStart());
+			boolean planEndsAfterRight = right.getTime().before(item.getPlanningEnd());
+			
+			int start, span;
+			if(planStartsBeforeLeft && planEndsAfterRight)
+			{
+				start = 0;
+				span = columnCount;
+			}
+			else
+			{
+				// Calculate the start of the SpannableBar
+				if(planStartsBeforeLeft)
+					start = 0;
+				else
+				{
+					long difference = item.getPlanningStart().getTime() - left.getTime().getTime();
+					start = Math.round(TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS));
+				}
+				
+				// Calculate the span of the SpannableBar
+				if(planEndsAfterRight)
+					span = columnCount - start;
+				else
+				{
+					long difference = item.getPlanningEnd().getTime() - right.getTime().getTime();
+					span = Math.round(TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS));
+				}
+			}
+			
+			// Do not add rows that display nothing.
+			if(span > 0)
+				rows.add(new InitialsRow(start, span, item));
 		}
 		
-		setRows(rows);
-	}
-	
-	private void setRows(List<InitialsRow> rows)
-	{
 		// Sort by employee name
 		Collections.sort(rows, InitialsRow.getComparator());
 		String temp = null;
 		for(InitialsRow row : rows)
 		{
-			if(temp == null || temp.equals(row.getItem().getEmployeeName()))
+			if(temp == null || !temp.equals(row.getItem().getEmployeeName()))
 			{
 				temp = row.getItem().getEmployeeName();
 				row.setInitialsVisibility(true); // Only display the initials on the top one if there's multiple
@@ -194,6 +198,7 @@ public class TimeTable extends FrameLayout
 		
 		adapter.set(rows);
 		updateTitles();
+		requestLayout();
 	}
 	
 	private void updateTitles()
@@ -205,14 +210,17 @@ public class TimeTable extends FrameLayout
 			textViews[i].setText(Integer.toString(calendar.get(Calendar.DAY_OF_MONTH)));
 			calendar.add(Calendar.DATE, 1);
 		}
-		
 	}
 	
 	@Override
-	public boolean onTouchEvent(MotionEvent event)
+	public void onSwipeLeft()
 	{
-		gestureDetector.onTouchEvent(event);
-		
-		return super.onTouchEvent(event);
+		pageRight();
+	}
+	
+	@Override
+	public void onSwipeRight()
+	{
+		pageLeft();
 	}
 }

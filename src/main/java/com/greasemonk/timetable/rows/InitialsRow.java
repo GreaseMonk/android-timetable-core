@@ -10,13 +10,9 @@ import com.greasemonk.spannablebar.SpannableBar;
 import com.greasemonk.timetable.AbstractRowItem;
 import com.greasemonk.timetable.R;
 import com.mikepenz.fastadapter.items.AbstractItem;
-import com.greasemonk.timetable.TimeTable.TimePeriod;
 
-import java.util.Calendar;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Wiebe Geertsma on 14-11-2016.
@@ -24,21 +20,15 @@ import java.util.concurrent.TimeUnit;
  */
 public class InitialsRow extends AbstractItem<InitialsRow, InitialsRow.ViewHolder> implements Comparable<InitialsRow>
 {
-	private static final int SPAN_MAX = 7;
-	
 	private AbstractRowItem item; // The stored item
-	private Date tableDateStart, tableDateEnd; // The plan's start and end date
-	private TimePeriod timePeriod; // The time period (day, week, month) that is displayed
 	private boolean showInitials;
+	private int start, span;
 	
-	public InitialsRow(@NonNull TimePeriod timePeriod, // The time period: day, week, month, etc
-	                   @NonNull Date tableDateStart, // The date that is outmost left of the timetable header
-	                   @NonNull Date tableDateEnd, // The date that is outmost right of the timetable header
-	                   @NonNull AbstractRowItem item)
+	public InitialsRow(int start, int span, @NonNull AbstractRowItem item)
 	{
-		this.tableDateStart = tableDateStart;
-		this.tableDateEnd = tableDateEnd;
-		this.timePeriod = timePeriod;
+		this.item = item;
+		this.start = start;
+		this.span = span;
 	}
 	
 	@Override
@@ -100,7 +90,7 @@ public class InitialsRow extends AbstractItem<InitialsRow, InitialsRow.ViewHolde
 			for (String str : splitted)
 			{
 				if (str.length() > 0)
-					displayedInitials += str.substring(0, 0).toUpperCase();
+					displayedInitials += str.substring(0, 1).toUpperCase();
 			}
 			
 			viewHolder.initials.setOnClickListener(new View.OnClickListener()
@@ -114,79 +104,6 @@ public class InitialsRow extends AbstractItem<InitialsRow, InitialsRow.ViewHolde
 		}
 		viewHolder.initials.setText(displayedInitials);
 		
-		
-		// Compare dates, and figure out where the bar starts and how many columns it should span
-		int span = 0;
-		int start = 0;
-		
-		if (tableDateStart.after(item.getPlanningStart()) && tableDateEnd.before(item.getPlanningEnd()))
-			span = SPAN_MAX;
-		else
-		{
-			switch (timePeriod)
-			{
-				case DAY:
-					Calendar cal = Calendar.getInstance();
-					cal.setTime(tableDateStart);
-					Date left = cal.getTime();
-					cal.add(Calendar.DATE, SPAN_MAX);
-					Date right = cal.getTime();
-					
-					if (left.after(tableDateStart))
-					{
-						// Most left column is after project start date.
-						if (right.before(tableDateEnd))
-						{
-							// Most right column is before project end date.
-							// The project's planning fits within all columns.
-							span = 7;
-						}
-						else
-						{
-							// Most right column is after project end date.
-							// Go back a couple of days.
-							long diff = right.getTime() - tableDateEnd.getTime();
-							int days = Math.round(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS));
-							days -= 1;
-							if (days < 0)
-								days = 0;
-							span = SPAN_MAX - days;
-						}
-					}
-					else
-					{
-						// Most left column is before project start date.
-						// Go forward a couple of days
-						long diff = tableDateStart.getTime() - left.getTime();
-						int days = Math.round(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS));
-						days += 1;
-						start = days;
-						
-						if (right.before(tableDateEnd))
-						{
-							// Most right column is before project end date.
-							span = SPAN_MAX - start;
-						}
-						else
-						{
-							// Most right column is after project end date.
-							// Go back a couple of days.
-							long diff2 = right.getTime() - tableDateEnd.getTime();
-							int days2 = Math.round(TimeUnit.DAYS.convert(diff2, TimeUnit.MILLISECONDS));
-							span -= days2;
-						}
-					}
-					break;
-				case WEEK:
-					
-					break;
-				case MONTH:
-					
-					break;
-			}
-		}
-		if (span < 0)
-			span = 0;
 		
 		if (viewHolder.bar != null)
 		{
@@ -202,7 +119,7 @@ public class InitialsRow extends AbstractItem<InitialsRow, InitialsRow.ViewHolde
 	protected static class ViewHolder extends RecyclerView.ViewHolder
 	{
 		protected RelativeLayout view;
-		protected TextView initials;//, projectName;
+		protected TextView initials;
 		protected SpannableBar bar;
 		
 		public ViewHolder(View view)
@@ -211,7 +128,6 @@ public class InitialsRow extends AbstractItem<InitialsRow, InitialsRow.ViewHolde
 			this.view = (RelativeLayout) view;
 			this.initials = (TextView) view.findViewById(R.id.text1);
 			this.bar = (SpannableBar) view.findViewById(R.id.bar);
-			//this.projectName = (TextView) view.findViewById(R.id.text2);
 		}
 	}
 	
