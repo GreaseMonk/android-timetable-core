@@ -47,6 +47,8 @@ public class TimeTable extends FrameLayout
 	private TextView[] textViews = new TextView[7];
 	private GestureDetector gestureDetector;
 	
+	private int columnCount;
+	
 	public TimeTable(Context context)
 	{
 		super(context);
@@ -147,8 +149,52 @@ public class TimeTable extends FrameLayout
 		requestLayout();
 	}
 	
+	public void setColumnCount(int columnCount)
+	{
+		this.columnCount = columnCount;
+	}
 	
-	public void update() {};
+	public void update()
+	{
+		setRows(rows);
+	}
+	
+	public void update(Iterable<AbstractRowItem> list) 
+	{
+		rows = new ArrayList<>();
+		for(AbstractRowItem item : list)
+		{
+			rows.add(new InitialsRow(timePeriod, item.getPlanningStart(), item.getPlanningEnd(), item));
+		}
+		
+		setRows(rows);
+	}
+	
+	private void setRows(List<InitialsRow> rows)
+	{
+		// Sort by employee name
+		Collections.sort(rows, InitialsRow.getComparator());
+		String temp = null;
+		for(InitialsRow row : rows)
+		{
+			if(temp == null || temp.equals(row.getItem().getEmployeeName()))
+			{
+				temp = row.getItem().getEmployeeName();
+				row.setInitialsVisibility(true); // Only display the initials on the top one if there's multiple
+			}
+		}
+		
+		if (adapter == null)
+		{
+			adapter = new FastItemAdapter<>();
+			adapter.setHasStableIds(true);
+			adapter.withSelectable(false);
+			recyclerView.setAdapter(adapter);
+		}
+		
+		adapter.set(rows);
+		updateTitles();
+	}
 	
 	private void updateTitles()
 	{
