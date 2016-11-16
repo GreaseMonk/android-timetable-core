@@ -5,12 +5,14 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.VelocityTrackerCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
@@ -27,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 {
-	private static final int SWIPE_VELOCITY_THRESHOLD = 1000;
+	private static final int SWIPE_VELOCITY_THRESHOLD = 500;
 	
 	private View view;
 	private TextView title;
@@ -39,29 +41,7 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 	private Calendar left = Calendar.getInstance();
 	private Calendar right = Calendar.getInstance();
 	private TextView[] textViews = new TextView[7];
-	
-	private final RecyclerView.OnFlingListener flingListener = new RecyclerView.OnFlingListener()
-	{
-		@Override
-		public boolean onFling(int velocityX, int velocityY)
-		{
-			int velocity = velocityY > 0 ? velocityY : velocityY * -1;
-			if (Math.abs(velocity) > SWIPE_VELOCITY_THRESHOLD) 
-			{
-				if (velocityY > 0) 
-				{
-					onSwipeRight();
-					return true;
-				} else 
-					{
-					onSwipeLeft();
-					return true;
-				}
-			}
-			return false;
-		}
-	};
-	
+	private GestureDetector gestureDetector;
 	
 	private int columnCount;
 	
@@ -95,11 +75,72 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 		view = inflate(getContext(), com.greasemonk.timetable.R.layout.paging_timetable_view, null);
 		
 		title = (TextView) view.findViewById(R.id.title);
-		
+		gestureDetector = new GestureDetector(getContext(), new GestureDetector.OnGestureListener()
+		{
+			@Override
+			public boolean onDown(MotionEvent motionEvent)
+			{
+				return false;
+			}
+			
+			@Override
+			public void onShowPress(MotionEvent motionEvent)
+			{
+				
+			}
+			
+			@Override
+			public boolean onSingleTapUp(MotionEvent motionEvent)
+			{
+				return false;
+			}
+			
+			@Override
+			public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1)
+			{
+				return false;
+			}
+			
+			@Override
+			public void onLongPress(MotionEvent motionEvent)
+			{
+				
+			}
+			
+			@Override
+			public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float x, float y)
+			{
+				// Get velocity in pixels per second
+				int velocity = Math.round(Math.abs(x));
+				if (velocity > SWIPE_VELOCITY_THRESHOLD)
+				{
+					if (x > 0)
+					{
+						onSwipeRight();
+						return true;
+					}
+					else
+					{
+						onSwipeLeft();
+						return true;
+					}
+				}
+				return false;
+			}
+		});
 		recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 		recyclerView.setItemAnimator(new DefaultItemAnimator());
-		recyclerView.setOnFlingListener(flingListener);
+		recyclerView.setOnTouchListener(new OnTouchListener()
+		{
+			@Override
+			public boolean onTouch(View view, MotionEvent motionEvent)
+			{
+				gestureDetector.onTouchEvent(motionEvent);
+				return false;
+			}
+		});
+		
 		
 		textViews[0] = (TextView) view.findViewById(R.id.text1);
 		textViews[1] = (TextView) view.findViewById(R.id.text2);
@@ -139,7 +180,7 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 	
 	private void update()
 	{
-		if(items != null)
+		if (items != null)
 			update(items);
 	}
 	
@@ -147,14 +188,14 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 	{
 		this.items = items;
 		rows = new ArrayList<>();
-		for(AbstractRowItem item : items)
+		for (AbstractRowItem item : items)
 		{
 			// Left and Right are the TimeTable's date range
 			boolean planStartsBeforeLeft = left.getTime().after(item.getPlanningStart());
 			boolean planEndsAfterRight = right.getTime().before(item.getPlanningEnd());
 			
 			int start, span;
-			if(planStartsBeforeLeft && planEndsAfterRight)
+			if (planStartsBeforeLeft && planEndsAfterRight)
 			{
 				start = 0;
 				span = columnCount;
@@ -162,7 +203,7 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 			else
 			{
 				// Calculate the start of the SpannableBar
-				if(planStartsBeforeLeft)
+				if (planStartsBeforeLeft)
 					start = 0;
 				else
 				{
@@ -171,7 +212,7 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 				}
 				
 				// Calculate the span of the SpannableBar
-				if(planEndsAfterRight)
+				if (planEndsAfterRight)
 					span = columnCount - start;
 				else
 				{
@@ -181,16 +222,16 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 			}
 			
 			// Do not add rows that display nothing.
-			if(span > 0)
+			if (span > 0)
 				rows.add(new InitialsRow(start, span, item));
 		}
 		
 		// Sort by employee name
 		Collections.sort(rows, InitialsRow.getComparator());
 		String temp = null;
-		for(InitialsRow row : rows)
+		for (InitialsRow row : rows)
 		{
-			if(temp == null || !temp.equals(row.getItem().getEmployeeName()))
+			if (temp == null || !temp.equals(row.getItem().getEmployeeName()))
 			{
 				temp = row.getItem().getEmployeeName();
 				row.setInitialsVisibility(true); // Only display the initials on the top one if there's multiple
@@ -214,7 +255,7 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 	{
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(left.getTime());
-		for(int i = 0; i < 7; i++)
+		for (int i = 0; i < 7; i++)
 		{
 			textViews[i].setText(Integer.toString(calendar.get(Calendar.DAY_OF_MONTH)));
 			calendar.add(Calendar.DATE, 1);
