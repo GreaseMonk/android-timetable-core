@@ -13,9 +13,10 @@ In the construction sector, planners use a time table program at the office to s
 The date (day/week/month) are on the horizontal axis, and the vertical axis lists the projects per employee.
 It has to be readable, and accurate to the day.
 
-Here is a work in progress from 14-11-2016, which displays an employee's initials (but when tapped, shows the full name) and the project they are planned on on which days.
+Here is a work in progress from 16-11-2016, which displays an employee's initials (but when tapped, shows the full name) and the project they are planned on on which days.
 
-![current result example](https://github.com/GreaseMonk/android-timetable-core/blob/master/images/device-2016-11-16-160822.png)
+![current result example](https://github.com/GreaseMonk/android-timetable-core/blob/master/images/device-2016-11-16-160822.png) 
+![YouTube video sample](https://www.youtube.com/watch?v=Jau9FQB9HyA)
 
 Take note that it is not important to un-clutter the long list that may appear. Workers often only get to see the time table they are assigned to, sometimes with the colleagues in his team.
 
