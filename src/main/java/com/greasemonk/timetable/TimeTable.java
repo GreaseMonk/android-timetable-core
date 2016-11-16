@@ -5,14 +5,12 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.view.VelocityTrackerCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.VelocityTracker;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
@@ -29,6 +27,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 {
+	// Settings for the timetable
 	private static final int SWIPE_VELOCITY_THRESHOLD = 500;
 	
 	private View view;
@@ -40,7 +39,7 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 	private ProgressBar progressBar;
 	private Calendar left = Calendar.getInstance();
 	private Calendar right = Calendar.getInstance();
-	private TextView[] textViews = new TextView[7];
+	private TextView[] textViews;
 	private GestureDetector gestureDetector;
 	
 	private int columnCount;
@@ -48,33 +47,44 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 	public TimeTable(Context context)
 	{
 		super(context);
-		init();
+		init(null);
 	}
 	
 	public TimeTable(Context context, @Nullable AttributeSet attrs)
 	{
 		super(context, attrs);
-		init();
+		init(attrs);
 	}
 	
 	public TimeTable(Context context, @Nullable AttributeSet attrs, int defStyleAttr)
 	{
 		super(context, attrs, defStyleAttr);
-		init();
+		init(attrs);
 	}
 	
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public TimeTable(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes)
 	{
 		super(context, attrs, defStyleAttr, defStyleRes);
-		init();
+		init(attrs);
 	}
 	
-	private void init()
+	private void init(@Nullable AttributeSet attrs)
 	{
 		view = inflate(getContext(), com.greasemonk.timetable.R.layout.paging_timetable_view, null);
-		
 		title = (TextView) view.findViewById(R.id.title);
+		progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+		recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+		textViews = new TextView[]{
+				(TextView) view.findViewById(R.id.text1),
+				(TextView) view.findViewById(R.id.text2),
+				(TextView) view.findViewById(R.id.text3),
+				(TextView) view.findViewById(R.id.text4),
+				(TextView) view.findViewById(R.id.text5),
+				(TextView) view.findViewById(R.id.text6),
+				(TextView) view.findViewById(R.id.text7)};
+		
+		progressBar.setVisibility(GONE);
 		gestureDetector = new GestureDetector(getContext(), new GestureDetector.OnGestureListener()
 		{
 			@Override
@@ -128,7 +138,8 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 				return false;
 			}
 		});
-		recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+		
+		// Initialize the list and make sure we can swipe to change pages.
 		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 		recyclerView.setItemAnimator(new DefaultItemAnimator());
 		recyclerView.setOnTouchListener(new OnTouchListener()
@@ -141,17 +152,6 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 			}
 		});
 		
-		
-		textViews[0] = (TextView) view.findViewById(R.id.text1);
-		textViews[1] = (TextView) view.findViewById(R.id.text2);
-		textViews[2] = (TextView) view.findViewById(R.id.text3);
-		textViews[3] = (TextView) view.findViewById(R.id.text4);
-		textViews[4] = (TextView) view.findViewById(R.id.text5);
-		textViews[5] = (TextView) view.findViewById(R.id.text6);
-		textViews[6] = (TextView) view.findViewById(R.id.text7);
-		
-		progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
-		progressBar.setVisibility(GONE);
 		left.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 		right.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
 		

@@ -104,16 +104,13 @@ public class InitialsRow extends AbstractItem<InitialsRow, InitialsRow.ViewHolde
 		}
 		viewHolder.initials.setText(displayedInitials);
 		
+		viewHolder.bar.setStart(start);
+		viewHolder.bar.setSpan(span);
 		
-		if (viewHolder.bar != null)
-		{
-			viewHolder.bar.set(start, span);
-			
-			if (span > 0)
-				viewHolder.bar.setText(item.getProjectName());
-			else
-				viewHolder.bar.setText("");
-		}
+		if (span > 0)
+			viewHolder.bar.setText(item.getProjectName());
+		else
+			viewHolder.bar.setText("");
 	}
 	
 	protected static class ViewHolder extends RecyclerView.ViewHolder

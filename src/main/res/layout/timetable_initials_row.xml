@@ -2,12 +2,12 @@
 <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content" xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
             android:id="@+id/text1"
             android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_height="24dp"
             android:lines="1"
             android:ellipsize="end"
             android:maxLength="2"
@@ -24,7 +24,8 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_toRightOf="@+id/text1"
-            android:layout_toEndOf="@+id/text1"/>
+            android:layout_toEndOf="@+id/text1"
+            app:barPadding="1dp"/>
 
 
 </RelativeLayout>
