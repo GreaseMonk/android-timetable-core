@@ -9,73 +9,77 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-
-        <Space android:id="@+id/space_left"
-               android:layout_height="48dp"
-               android:layout_width="48dp"/>
+        <TextView android:id="@+id/title"
+                android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:gravity="center"
+                  android:text="Week 26, May 2016"
+                  android:textAllCaps="true"/>
 
         <LinearLayout android:layout_height="48dp"
-                      android:layout_width="0dp"
+                      android:layout_width="match_parent"
+                      android:layout_marginLeft="48dp"
+                      android:layout_marginStart="48dp"
+                      android:layout_marginEnd="48dp"
+                      android:layout_marginRight="48dp"
                       android:orientation="horizontal"
-                      android:layout_toRightOf="@+id/space_left"
-                      android:layout_toEndOf="@+id/space_left"
-                      android:layout_toStartOf="@+id/space_right"
-                      android:layout_toLeftOf="@+id/space_right"
                       android:weightSum="7">
 
             <Button android:text="31"
                     android:id="@+id/text1"
                     android:background="?android:attr/selectableItemBackground"
+                    android:gravity="bottom|center_horizontal"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_weight="1"/>
             <Button android:text="32"
                     android:id="@+id/text2"
                     android:background="?android:attr/selectableItemBackground"
+                    android:gravity="bottom|center_horizontal"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_weight="1"/>
             <Button android:text="33"
                     android:id="@+id/text3"
                     android:background="?android:attr/selectableItemBackground"
+                    android:gravity="bottom|center_horizontal"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_weight="1"/>
             <Button android:text="34"
                     android:id="@+id/text4"
                     android:background="?android:attr/selectableItemBackground"
+                    android:gravity="bottom|center_horizontal"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_weight="1"/>
             <Button android:text="35"
                     android:id="@+id/text5"
                     android:background="?android:attr/selectableItemBackground"
+                    android:gravity="bottom|center_horizontal"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_weight="1"/>
             <Button android:text="36"
                     android:id="@+id/text6"
                     android:background="?android:attr/selectableItemBackground"
+                    android:gravity="bottom|center_horizontal"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_weight="1"/>
             <Button android:text="37"
                     android:id="@+id/text7"
                     android:background="?android:attr/selectableItemBackground"
+                    android:gravity="bottom|center_horizontal"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_weight="1"/>
 
         </LinearLayout>
 
-
-        <Space android:id="@+id/space_right"
-               android:layout_height="48dp"
-               android:layout_width="48dp"
-               android:layout_alignParentEnd="true"
-               android:layout_alignParentRight="true"/>
-
     </RelativeLayout>
+
+    <View style="@style/divider" android:layout_below="@id/group1"/>
 
     <ScrollView android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -84,6 +88,7 @@
         <android.support.v7.widget.RecyclerView android:id="@+id/recycler_view"
                                                 android:layout_width="match_parent"
                                                 android:layout_height="wrap_content"
+                                                android:minHeight="200dp"
         />
 
     </ScrollView>

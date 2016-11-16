@@ -27,11 +27,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 {
-	private static final int SWIPE_THRESHOLD = 100;
-	private static final int SWIPE_VELOCITY_THRESHOLD = 100;
-	private GestureDetector gestureDetector;
+	private static final int SWIPE_VELOCITY_THRESHOLD = 1000;
 	
 	private View view;
+	private TextView title;
 	private RecyclerView recyclerView;
 	private List<T> items;
 	private List<InitialsRow> rows;
@@ -95,6 +94,8 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 	{
 		view = inflate(getContext(), com.greasemonk.timetable.R.layout.paging_timetable_view, null);
 		
+		title = (TextView) view.findViewById(R.id.title);
+		
 		recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 		recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -112,34 +113,6 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 		progressBar.setVisibility(GONE);
 		left.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 		right.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-		
-		/*gestureDetector = new GestureDetector(getContext(),new GestureDetector.SimpleOnGestureListener(){
-			@Override
-			public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
-			{
-				boolean result = false;
-				if(e1 == null || e2 == null)
-					return false;
-				try {
-					float diffY = e2.getY() - e1.getY();
-					float diffX = e2.getX() - e1.getX();
-					if (Math.abs(diffX) > Math.abs(diffY)) {
-						
-					}
-					// This is for up/down gestures which we won't block so the recyclerview can scroll.
-					*//*else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
-						if (diffY > 0) {
-							//onSwipeBottom();
-						} else {
-							//onSwipeTop();
-						}
-					}*//*
-				} catch (Exception exception) {
-					exception.printStackTrace();
-				}
-				return result;
-			}
-		});*/
 		
 		addView(view);
 		requestLayout();
@@ -246,6 +219,12 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 			textViews[i].setText(Integer.toString(calendar.get(Calendar.DAY_OF_MONTH)));
 			calendar.add(Calendar.DATE, 1);
 		}
+		
+		String titleText = "week " + calendar.get(Calendar.WEEK_OF_YEAR) + ", ";
+		titleText += calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
+		titleText += " " + calendar.get(Calendar.YEAR);
+		
+		title.setText(titleText);
 	}
 	
 	@Override
