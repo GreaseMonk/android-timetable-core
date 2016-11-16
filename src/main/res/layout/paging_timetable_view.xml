@@ -10,20 +10,17 @@
                     android:layout_height="wrap_content">
 
 
-        <Button android:id="@+id/btn_left"
-                android:layout_height="48dp"
-                android:layout_width="48dp"
-                android:padding="4dp"
-                android:text="←"
-                android:textStyle="bold"/>
+        <Space android:id="@+id/space_left"
+               android:layout_height="48dp"
+               android:layout_width="48dp"/>
 
         <LinearLayout android:layout_height="48dp"
                       android:layout_width="0dp"
                       android:orientation="horizontal"
-                      android:layout_toRightOf="@+id/btn_left"
-                      android:layout_toEndOf="@+id/btn_left"
-                      android:layout_toStartOf="@+id/btn_right"
-                      android:layout_toLeftOf="@+id/btn_right"
+                      android:layout_toRightOf="@+id/space_left"
+                      android:layout_toEndOf="@+id/space_left"
+                      android:layout_toStartOf="@+id/space_right"
+                      android:layout_toLeftOf="@+id/space_right"
                       android:weightSum="7">
 
             <Button android:text="31"
@@ -72,14 +69,11 @@
         </LinearLayout>
 
 
-        <Button android:id="@+id/btn_right"
-                android:layout_height="48dp"
-                android:layout_width="48dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:padding="4dp"
-                android:text="→"
-                android:textStyle="bold"/>
+        <Space android:id="@+id/space_right"
+               android:layout_height="48dp"
+               android:layout_width="48dp"
+               android:layout_alignParentEnd="true"
+               android:layout_alignParentRight="true"/>
 
     </RelativeLayout>
 
@@ -87,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/group1">
 
-        <com.greasemonk.timetable.PagingRecyclerView android:id="@+id/recycler_view"
+        <android.support.v7.widget.RecyclerView android:id="@+id/recycler_view"
                                                 android:layout_width="match_parent"
                                                 android:layout_height="wrap_content"
         />

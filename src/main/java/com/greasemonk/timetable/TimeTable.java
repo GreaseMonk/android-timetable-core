@@ -25,10 +25,14 @@ import java.util.concurrent.TimeUnit;
  * Created by Wiebe Geertsma on 14-11-2016.
  * E-mail: e.w.geertsma@gmail.com
  */
-public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements PagingDelegate
+public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 {
+	private static final int SWIPE_THRESHOLD = 100;
+	private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+	private GestureDetector gestureDetector;
+	
 	private View view;
-	private PagingRecyclerView recyclerView;
+	private RecyclerView recyclerView;
 	private List<T> items;
 	private List<InitialsRow> rows;
 	private FastItemAdapter<InitialsRow> adapter;
@@ -36,6 +40,28 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 	private Calendar left = Calendar.getInstance();
 	private Calendar right = Calendar.getInstance();
 	private TextView[] textViews = new TextView[7];
+	
+	private final RecyclerView.OnFlingListener flingListener = new RecyclerView.OnFlingListener()
+	{
+		@Override
+		public boolean onFling(int velocityX, int velocityY)
+		{
+			int velocity = velocityY > 0 ? velocityY : velocityY * -1;
+			if (Math.abs(velocity) > SWIPE_VELOCITY_THRESHOLD) 
+			{
+				if (velocityY > 0) 
+				{
+					onSwipeRight();
+					return true;
+				} else 
+					{
+					onSwipeLeft();
+					return true;
+				}
+			}
+			return false;
+		}
+	};
 	
 	
 	private int columnCount;
@@ -68,9 +94,11 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 	private void init()
 	{
 		view = inflate(getContext(), com.greasemonk.timetable.R.layout.paging_timetable_view, null);
-		recyclerView = (PagingRecyclerView) view.findViewById(R.id.recycler_view);
+		
+		recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 		recyclerView.setItemAnimator(new DefaultItemAnimator());
+		recyclerView.setOnFlingListener(flingListener);
 		
 		textViews[0] = (TextView) view.findViewById(R.id.text1);
 		textViews[1] = (TextView) view.findViewById(R.id.text2);
@@ -82,41 +110,49 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 		
 		progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
 		progressBar.setVisibility(GONE);
-		
-		view.findViewById(R.id.btn_left).setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View view)
-			{
-				pageLeft();
-			}
-		});
-		view.findViewById(R.id.btn_right).setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View view)
-			{
-				pageRight();
-			}
-		});
-		
 		left.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 		right.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
 		
-		
+		/*gestureDetector = new GestureDetector(getContext(),new GestureDetector.SimpleOnGestureListener(){
+			@Override
+			public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
+			{
+				boolean result = false;
+				if(e1 == null || e2 == null)
+					return false;
+				try {
+					float diffY = e2.getY() - e1.getY();
+					float diffX = e2.getX() - e1.getX();
+					if (Math.abs(diffX) > Math.abs(diffY)) {
+						
+					}
+					// This is for up/down gestures which we won't block so the recyclerview can scroll.
+					*//*else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+						if (diffY > 0) {
+							//onSwipeBottom();
+						} else {
+							//onSwipeTop();
+						}
+					}*//*
+				} catch (Exception exception) {
+					exception.printStackTrace();
+				}
+				return result;
+			}
+		});*/
 		
 		addView(view);
 		requestLayout();
 	}
 	
-	public void pageLeft()
+	public void onSwipeRight()
 	{
 		left.add(Calendar.WEEK_OF_YEAR, -1);
 		right.add(Calendar.WEEK_OF_YEAR, -1);
 		update();
 	}
 	
-	public void pageRight()
+	public void onSwipeLeft()
 	{
 		left.add(Calendar.WEEK_OF_YEAR, 1);
 		right.add(Calendar.WEEK_OF_YEAR, 1);
@@ -213,14 +249,9 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 	}
 	
 	@Override
-	public void onSwipeLeft()
+	public boolean onTouchEvent(MotionEvent e)
 	{
-		pageRight();
-	}
-	
-	@Override
-	public void onSwipeRight()
-	{
-		pageLeft();
+		//gestureDetector.onTouchEvent(e) ||
+		return super.onTouchEvent(e);
 	}
 }
