@@ -15,7 +15,7 @@ It has to be readable, and accurate to the day.
 
 Here is a work in progress from 14-11-2016, which displays an employee's initials (but when tapped, shows the full name) and the project they are planned on on which days.
 
-![current result example](https://github.com/GreaseMonk/android-timetable-core/blob/master/images/4805234321055974780-account_id=1.png)
+![current result example](https://github.com/GreaseMonk/android-timetable-core/blob/master/images/device-2016-11-16-113328.png)
 
 Take note that it is not important to un-clutter the long list that may appear. Workers often only get to see the time table they are assigned to, sometimes with the colleagues in his team.
 
