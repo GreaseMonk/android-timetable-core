@@ -7,14 +7,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.*;
 import com.greasemonk.timetable.rows.InitialsRow;
 import com.mikepenz.fastadapter.adapters.FastItemAdapter;
 
@@ -25,14 +20,11 @@ import java.util.concurrent.TimeUnit;
  * Created by Wiebe Geertsma on 14-11-2016.
  * E-mail: e.w.geertsma@gmail.com
  */
-public class TimeTable<T extends AbstractRowItem> extends FrameLayout
+public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements SimplePagingDelegate
 {
-	// Settings for the timetable
-	private static final int SWIPE_VELOCITY_THRESHOLD = 500;
-	
 	private View view;
 	private TextView title;
-	private RecyclerView recyclerView;
+	private SwipingRecyclerView recyclerView;
 	private List<T> items;
 	private List<InitialsRow> rows;
 	private FastItemAdapter<InitialsRow> adapter;
@@ -40,9 +32,8 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 	private Calendar left = Calendar.getInstance();
 	private Calendar right = Calendar.getInstance();
 	private TextView[] textViews;
-	private GestureDetector gestureDetector;
-	
 	private int columnCount;
+	
 	
 	public TimeTable(Context context)
 	{
@@ -74,7 +65,7 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 		view = inflate(getContext(), com.greasemonk.timetable.R.layout.paging_timetable_view, null);
 		title = (TextView) view.findViewById(R.id.title);
 		progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
-		recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+		recyclerView = (SwipingRecyclerView) view.findViewById(R.id.recycler_view);
 		textViews = new TextView[]{
 				(TextView) view.findViewById(R.id.text1),
 				(TextView) view.findViewById(R.id.text2),
@@ -85,72 +76,14 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 				(TextView) view.findViewById(R.id.text7)};
 		
 		progressBar.setVisibility(GONE);
-		gestureDetector = new GestureDetector(getContext(), new GestureDetector.OnGestureListener()
-		{
-			@Override
-			public boolean onDown(MotionEvent motionEvent)
-			{
-				return false;
-			}
-			
-			@Override
-			public void onShowPress(MotionEvent motionEvent)
-			{
-				
-			}
-			
-			@Override
-			public boolean onSingleTapUp(MotionEvent motionEvent)
-			{
-				return false;
-			}
-			
-			@Override
-			public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1)
-			{
-				return false;
-			}
-			
-			@Override
-			public void onLongPress(MotionEvent motionEvent)
-			{
-				
-			}
-			
-			@Override
-			public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float x, float y)
-			{
-				// Get velocity in pixels per second
-				int velocity = Math.round(Math.abs(x));
-				if (velocity > SWIPE_VELOCITY_THRESHOLD)
-				{
-					if (x > 0)
-					{
-						onSwipeRight();
-						return true;
-					}
-					else
-					{
-						onSwipeLeft();
-						return true;
-					}
-				}
-				return false;
-			}
-		});
+		
+		
+		
 		
 		// Initialize the list and make sure we can swipe to change pages.
 		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 		recyclerView.setItemAnimator(new DefaultItemAnimator());
-		recyclerView.setOnTouchListener(new OnTouchListener()
-		{
-			@Override
-			public boolean onTouch(View view, MotionEvent motionEvent)
-			{
-				gestureDetector.onTouchEvent(motionEvent);
-				return false;
-			}
-		});
+		recyclerView.setDelegate(this);
 		
 		left.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 		right.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
@@ -159,6 +92,7 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 		requestLayout();
 	}
 	
+	@Override
 	public void onSwipeRight()
 	{
 		left.add(Calendar.WEEK_OF_YEAR, -1);
@@ -166,6 +100,7 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 		update();
 	}
 	
+	@Override
 	public void onSwipeLeft()
 	{
 		left.add(Calendar.WEEK_OF_YEAR, 1);
@@ -268,10 +203,6 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout
 		title.setText(titleText);
 	}
 	
-	@Override
-	public boolean onTouchEvent(MotionEvent e)
-	{
-		//gestureDetector.onTouchEvent(e) ||
-		return super.onTouchEvent(e);
-	}
+	
+	
 }
