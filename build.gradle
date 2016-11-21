@@ -1,4 +1,7 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+
+group='com.github.GreaseMonk'
 
 android {
     compileSdkVersion 25
@@ -30,4 +33,42 @@ dependencies {
     // Used for 'adapterless' recyclerview lists
     // https://github.com/mikepenz/fastadapter
     compile('com.mikepenz:fastadapter:1.8.2@aar') { transitive = true }
+}
+
+buildscript {
+    repositories {
+        jcenter()
+        maven { url "https://jitpack.io" }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.2'
+    }
+}
+
+// build a jar with source files
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    failOnError  false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
+}
+
+// build a jar with javadoc
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.14.1'
 }

@@ -81,7 +81,8 @@
 
     <View style="@style/divider" android:layout_below="@id/group1"/>
 
-    <ScrollView android:layout_width="match_parent"
+    <ScrollView android:id="@+id/scroll_view" 
+            android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/group1">
 
@@ -92,6 +93,8 @@
         />
 
     </ScrollView>
+
+    <View style="@style/divider" android:layout_below="@id/scroll_view"/>
 
     <ProgressBar android:id="@+id/progress_bar"
                  android:indeterminate="true"
