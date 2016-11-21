@@ -10,8 +10,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 104
-        versionName "1.0.4"
+        versionCode 105
+        versionName "1.0.5"
     }
     buildTypes {
         release {
@@ -33,6 +33,14 @@ dependencies {
     // Used for 'adapterless' recyclerview lists
     // https://github.com/mikepenz/fastadapter
     compile('com.mikepenz:fastadapter:1.8.2@aar') { transitive = true }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url "https://jitpack.io" }
+    }
 }
 
 buildscript {
