@@ -10,8 +10,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 101
-        versionName "1.0.1"
+        versionCode 103
+        versionName "1.0.3"
     }
     buildTypes {
         release {
@@ -25,10 +25,10 @@ android {
 }
 
 dependencies {
-    compile project(':spannablebar')
-    compile "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
-    compile "com.android.support:recyclerview-v7:${rootProject.ext.supportLibVersion}"
-    compile "com.android.support:support-annotations:${rootProject.ext.supportLibVersion}"
+    compile "com.android.support:appcompat-v7:25.0.0"
+    compile "com.android.support:recyclerview-v7:25.0.0"
+    compile "com.android.support:support-annotations:25.0.0"
+    compile 'com.github.GreaseMonk:spannablebar:1.0.0'
 
     // Used for 'adapterless' recyclerview lists
     // https://github.com/mikepenz/fastadapter
@@ -42,6 +42,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.2'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
     }
 }
 
