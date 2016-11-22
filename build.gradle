@@ -6,7 +6,7 @@ ext {
     bintrayName = 'timetable'
 
     publishedGroupId = 'com.github.greasemonk'
-    libraryName = 'timetable'
+    libraryName = 'TimeTable'
     artifact = 'timetable'
 
     libraryDescription = 'Main library for a timetable designed for planning employees to projects.'
