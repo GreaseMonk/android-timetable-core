@@ -1,55 +1,72 @@
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.greasemonk/timetable/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.github.greasemonk/timetable) [![API](https://img.shields.io/badge/API-16%2B-yellow.svg?style=flat)](https://android-arsenal.com/api?level=16)
 android-timetable-core
 ===================
 
-Main library for a timetable designed for planning employees to projects.
+A timetable designed for planning employees to projects.
 
-
-## Goal
-
-The goal is to create a time table for employees that are planned to projects.
-
-In the construction sector, planners use a time table program at the office to sort out who works where out on the worksite, and with this library the workers can see it on the phone.
-
-The date (day/week/month) are on the horizontal axis, and the vertical axis lists the projects per employee.
-It has to be readable, and accurate to the day.
-
-Here is a work in progress from 16-11-2016, which displays an employee's initials (but when tapped, shows the full name) and the project they are planned on on which days.
+For example, in the construction sector, planners use a time table program at the office to sort out who works where out on the worksite, and with this library the workers can see it on the phone. The date (day/week/month) are on the horizontal axis, and the vertical axis lists the projects per employee.
 
 ![current result example](https://github.com/GreaseMonk/android-timetable-core/blob/master/images/device-2016-11-16-160822.png) 
 
-[>>YouTube video sample<<](https://www.youtube.com/watch?v=Jau9FQB9HyA)
 
-Take note that it is not important to un-clutter the long list that may appear. Workers often only get to see the time table they are assigned to, sometimes with the colleagues in his team.
+# Installation
 
+Include the following in your build.gradle as a dependency:
 
-## The current progress
+```gradle
+dependencies {
+  compile 'com.github.greasemonk:timetable:1.0.0'
+}
+```
 
-There's a column view that can create a 'bar' that spans over the columns as one object, making it very easy to modify in terms of shading and texturing. 
+If this fails, make sure to check if you have synchronized your local repositories.
 
-I've used this along with FastAdapter to create the rows with relative ease (the rows are subject for styling overhaul).
-
-Furthermore the date programming and day calculation is done. Currently, it generates random employees and puts them on one of the 3-4 projects or so which are planned anywhere between 30 days ago from today, lasting 0-30 days for a demo view.
-
-
-## Connected Repositories
-
-There are submodules in this repository, so that changes can be made quickly without any releases for the time being.
-
-[SpannableBar](https://github.com/GreaseMonk/SpannableBar) - A bar that has columns, start index, and span, and can easily be styled.
-
-[TimeTable](https://github.com/GreaseMonk/android-timetable) - Demo project that will be released on the google play store.
+In IntelliJ or Android Studio, you can find this under Settings>Build,Execution,Deployment>Build Tools>Maven>Repositories.
 
 
-## Usage
+# Usage
 
-To-do
+1. Include the layout in your XML:
 
-Push to maven central is due when primary goals are achieved, check back later.
+```xml
+<com.greasemonk.timetable.TimeTable android:id="@+id/time_table"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"/>
+```
+
+2. Implement your class with AbstractRowItem
+
+```
+public class EmployeePlanItem implements AbstractRowItem
+{
+	private String employeeName, projectName;
+	private Date planStart, planEnd;
+  
+  ...
+  
+  @Override
+	public Date getPlanningStart(){ return planStart; }
+	
+	@Override
+	public Date getPlanningEnd(){ return planEnd; }
+	
+	@Override
+	public String getEmployeeName(){  return employeeName; }
+	
+	@Override
+	public String getProjectName(){ return projectName; }
+```
+
+3. Fill the table with data:
+
+```
+timeTable = (TimeTable) findViewById(R.id.time_table);
+timeTable.setColumnCount(7);
+timeTable.update( getPlanData() );
+```
 
 
 ## Dependencies
 
 [FastAdapter](https://github.com/mikepenz/fastadapter) by Mike Penz. Used to display the rows.
-
-v7 Recyclerview by the Android open source project.
 
