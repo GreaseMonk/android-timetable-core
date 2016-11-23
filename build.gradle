@@ -14,7 +14,7 @@ ext {
     siteUrl = 'https://github.com/GreaseMonk/android-timetable-core'
     gitUrl = 'https://github.com/GreaseMonk/androit-timetable-core.git'
 
-    libraryVersion = '1.0.5'
+    libraryVersion = '1.0.6'
 
     developerId = 'greasemonk'
     developerName = 'Wiebe Geertsma'
@@ -29,13 +29,13 @@ group='com.github.GreaseMonk'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '25.0.1'
 
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 105
-        versionName "1.0.5"
+        versionCode 106
+        versionName "1.0.6"
     }
     buildTypes {
         release {
@@ -49,10 +49,10 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:25.0.0'
-    compile 'com.android.support:support-annotations:25.0.0'
-    compile 'com.android.support:recyclerview-v7:25.0.0'
-    compile 'com.github.GreaseMonk:spannablebar:1.0.0'
+    compile project(':spannablebar')
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:support-annotations:25.0.1'
+    compile 'com.android.support:recyclerview-v7:25.0.1'
 
     // https://github.com/mikepenz/fastadapter
     compile('com.mikepenz:fastadapter:1.8.2@aar') { transitive = true }

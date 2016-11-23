@@ -22,6 +22,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements SimplePagingDelegate
 {
+	private static final int DEFAULT_COLUMN_COUNT = 7;
+	
 	private View view;
 	private TextView title;
 	private SwipingRecyclerView recyclerView;
@@ -33,7 +35,6 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 	private Calendar right = Calendar.getInstance();
 	private TextView[] textViews;
 	private int columnCount;
-	
 	
 	public TimeTable(Context context)
 	{
@@ -87,6 +88,8 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 		
 		left.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 		right.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+		
+		columnCount = DEFAULT_COLUMN_COUNT;
 		
 		addView(view);
 		requestLayout();
@@ -158,7 +161,11 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 			
 			// Do not add rows that display nothing.
 			if (span > 0)
-				rows.add(new InitialsRow(start, span, item));
+			{
+				InitialsRow row = new InitialsRow(start, span, item);
+				
+				rows.add(row);
+			}
 		}
 		
 		// Sort by employee name
@@ -171,6 +178,8 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 				temp = row.getItem().getEmployeeName();
 				row.setInitialsVisibility(true); // Only display the initials on the top one if there's multiple
 			}
+			else
+				row.setInitialsVisibility(false);
 		}
 		
 		if (adapter == null)
@@ -202,7 +211,4 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 		
 		title.setText(titleText);
 	}
-	
-	
-	
 }

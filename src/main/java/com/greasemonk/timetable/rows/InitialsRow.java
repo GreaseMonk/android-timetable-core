@@ -84,7 +84,7 @@ public class InitialsRow extends AbstractItem<InitialsRow, InitialsRow.ViewHolde
 		
 		// If the user is named Roy Haroldsen , display "RH"
 		String displayedInitials = "";
-		if (item.getEmployeeName() != null && item.getEmployeeName().length() > 0)
+		if (showInitials && item.getEmployeeName() != null && item.getEmployeeName().length() > 0)
 		{
 			String[] splitted = item.getEmployeeName().split(" ");
 			for (String str : splitted)
@@ -102,10 +102,21 @@ public class InitialsRow extends AbstractItem<InitialsRow, InitialsRow.ViewHolde
 				}
 			});
 		}
-		viewHolder.initials.setText(displayedInitials);
+		if(showInitials)
+		{
+			viewHolder.initials.setVisibility(View.VISIBLE);
+			viewHolder.initials.setText(displayedInitials);
+		}
+		else
+		{
+			viewHolder.initials.setVisibility(View.INVISIBLE);
+			viewHolder.initials.setText("");
+		}
+		
 		
 		viewHolder.bar.setStart(start);
 		viewHolder.bar.setSpan(span);
+		viewHolder.bar.setShowCellLines(true);
 		
 		if (span > 0)
 			viewHolder.bar.setText(item.getProjectName());
@@ -145,4 +156,5 @@ public class InitialsRow extends AbstractItem<InitialsRow, InitialsRow.ViewHolde
 	{
 		return item;
 	}
+	
 }
