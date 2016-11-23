@@ -204,8 +204,10 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 			textViews[i].setText(Integer.toString(calendar.get(Calendar.DAY_OF_MONTH)));
 			calendar.add(Calendar.DATE, 1);
 		}
+		calendar = Calendar.getInstance();
 		
-		String titleText = "week " + calendar.get(Calendar.WEEK_OF_YEAR) + ", ";
+		// Values calculated for the WEEK_OF_YEAR field range from 1 to 53. 
+		String titleText = "week " + (calendar.get(Calendar.WEEK_OF_YEAR) -1) + ", ";
 		titleText += calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
 		titleText += " " + calendar.get(Calendar.YEAR);
 		
