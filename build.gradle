@@ -36,6 +36,7 @@ android {
         targetSdkVersion 25
         versionCode 107
         versionName '1.0.7'
+        setProperty("archivesBaseName", "timetable")
     }
     buildTypes {
         release {
