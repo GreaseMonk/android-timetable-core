@@ -6,7 +6,7 @@ A timetable designed for planning employees to projects.
 
 For example, in the construction sector, planners use a time table program at the office to sort out who works where out on the worksite, and with this library the workers can see it on the phone. The date (day/week/month) are on the horizontal axis, and the vertical axis lists the projects per employee.
 
-![current result example](https://github.com/GreaseMonk/android-timetable-core/blob/master/images/device-2016-11-23-162112.png) 
+![current result example](https://github.com/GreaseMonk/android-timetable-core/blob/master/images/device-2016-11-25-151601.png) 
 
 
 # Installation
@@ -15,7 +15,7 @@ Include the following in your build.gradle as a dependency:
 
 ```gradle
 dependencies {
-  compile 'com.github.greasemonk:timetable:1.0.6'
+  compile 'com.github.greasemonk:timetable:1.0.7'
 }
 ```
 
