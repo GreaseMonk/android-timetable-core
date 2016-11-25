@@ -1,14 +1,11 @@
-package com.greasemonk.timetable.rows;
+package com.greasemonk.timetable;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.greasemonk.spannablebar.SpannableBar;
-import com.greasemonk.timetable.AbstractRowItem;
-import com.greasemonk.timetable.R;
 import com.mikepenz.fastadapter.items.AbstractItem;
 
 import java.util.Comparator;
@@ -18,13 +15,13 @@ import java.util.List;
  * Created by Wiebe Geertsma on 14-11-2016.
  * E-mail: e.w.geertsma@gmail.com
  */
-public class InitialsRow extends AbstractItem<InitialsRow, InitialsRow.ViewHolder> implements Comparable<InitialsRow>
+public class TimeTableRow extends AbstractItem<TimeTableRow, TimeTableRow.ViewHolder> implements Comparable<TimeTableRow>
 {
 	private AbstractRowItem item; // The stored item
-	private boolean showInitials;
+	private boolean showName;
 	private int start, span;
 	
-	public InitialsRow(int start, int span, @NonNull AbstractRowItem item)
+	public TimeTableRow(int start, int span, @NonNull AbstractRowItem item)
 	{
 		this.item = item;
 		this.start = start;
@@ -32,11 +29,11 @@ public class InitialsRow extends AbstractItem<InitialsRow, InitialsRow.ViewHolde
 	}
 	
 	@Override
-	public int compareTo(@NonNull InitialsRow other)
+	public int compareTo(@NonNull TimeTableRow other)
 	{
-		if (item.getEmployeeName() == null)
+		if (item == null || item.getEmployeeName() == null)
 			return 1;
-		else if (other.item.getEmployeeName() == null)
+		else if (other.item == null || other.item.getEmployeeName() == null)
 			return -1;
 		
 		return item.getEmployeeName().compareTo(other.getItem().getEmployeeName());
@@ -45,14 +42,14 @@ public class InitialsRow extends AbstractItem<InitialsRow, InitialsRow.ViewHolde
 	/**
 	 * The comparator, used to sort a list with Collections.sort()..
 	 * By default it sorts on the given employee string from AbstractRowItem
-	 * @return a comparator for InitialsRow
+	 * @return a comparator for TimeTableRow
 	 */
-	public static Comparator<InitialsRow> getComparator()
+	public static Comparator<TimeTableRow> getComparator()
 	{
-		return new Comparator<InitialsRow>()
+		return new Comparator<TimeTableRow>()
 		{
 			@Override
-			public int compare(InitialsRow o1, InitialsRow o2)
+			public int compare(TimeTableRow o1, TimeTableRow o2)
 			{
 				return o1.compareTo(o2);
 			}
@@ -65,10 +62,11 @@ public class InitialsRow extends AbstractItem<InitialsRow, InitialsRow.ViewHolde
 		return R.id.timetable_initials_row_id;
 	}
 	
+	
 	@Override
 	public int getLayoutRes()
 	{
-		return R.layout.timetable_initials_row;
+		return R.layout.timetable_fullname_row;
 	}
 	
 	//The logic dateRight bind your data dateRight the view
@@ -82,35 +80,15 @@ public class InitialsRow extends AbstractItem<InitialsRow, InitialsRow.ViewHolde
 		viewHolder.itemView.setTag(this);
 		
 		
-		// If the user is named Roy Haroldsen , display "RH"
-		String displayedInitials = "";
-		if (showInitials && item.getEmployeeName() != null && item.getEmployeeName().length() > 0)
+		if(showName)
 		{
-			String[] splitted = item.getEmployeeName().split(" ");
-			for (String str : splitted)
-			{
-				if (str.length() > 0)
-					displayedInitials += str.substring(0, 1).toUpperCase();
-			}
-			
-			viewHolder.initials.setOnClickListener(new View.OnClickListener()
-			{
-				@Override
-				public void onClick(View view)
-				{
-					Toast.makeText(viewHolder.itemView.getContext(), item.getEmployeeName(), Toast.LENGTH_LONG).show();
-				}
-			});
-		}
-		if(showInitials)
-		{
-			viewHolder.initials.setVisibility(View.VISIBLE);
-			viewHolder.initials.setText(displayedInitials);
+			viewHolder.name.setVisibility(View.VISIBLE);
+			viewHolder.name.setText(item.getEmployeeName());
 		}
 		else
 		{
-			viewHolder.initials.setVisibility(View.INVISIBLE);
-			viewHolder.initials.setText("");
+			viewHolder.name.setVisibility(View.VISIBLE);
+			viewHolder.name.setText("");
 		}
 		
 		
@@ -127,14 +105,14 @@ public class InitialsRow extends AbstractItem<InitialsRow, InitialsRow.ViewHolde
 	protected static class ViewHolder extends RecyclerView.ViewHolder
 	{
 		protected RelativeLayout view;
-		protected TextView initials;
+		protected TextView name;
 		protected SpannableBar bar;
 		
 		public ViewHolder(View view)
 		{
 			super(view);
 			this.view = (RelativeLayout) view;
-			this.initials = (TextView) view.findViewById(R.id.text1);
+			this.name = (TextView) view.findViewById(R.id.text1);
 			this.bar = (SpannableBar) view.findViewById(R.id.bar);
 		}
 	}
@@ -143,9 +121,9 @@ public class InitialsRow extends AbstractItem<InitialsRow, InitialsRow.ViewHolde
 	 * Sets the visibility of the left TextView
 	 * @param visible the visibility value dateRight set (TRUE for visible)
 	 */
-	public void setInitialsVisibility(boolean visible)
+	public void setNameVisibility(boolean visible)
 	{
-		this.showInitials = visible;
+		this.showName = visible;
 	}
 	
 	/**
@@ -157,4 +135,24 @@ public class InitialsRow extends AbstractItem<InitialsRow, InitialsRow.ViewHolde
 		return item;
 	}
 	
+	/**
+	 * When you want to occupy less space for the person's name
+	 * 
+	 * @param employeeName The name of the employee to get the name of.
+	 * @return the name name of the employee.
+	 */
+	public static String getInitials(String employeeName)
+	{
+		String initials = "";
+		if (employeeName != null && employeeName.length() > 0)
+		{
+			String[] splitted = employeeName.split(" ");
+			for (String str : splitted)
+			{
+				if (str.length() > 0)
+					initials += str.substring(0, 1).toUpperCase();
+			}
+		}
+		return initials;
+	}
 }

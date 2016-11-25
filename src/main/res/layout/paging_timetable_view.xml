@@ -15,13 +15,11 @@
                   android:gravity="center"
                   android:text="Week 26, May 2016"
                   android:textAllCaps="true"/>
-
+        
         <LinearLayout android:layout_height="48dp"
                       android:layout_width="match_parent"
-                      android:layout_marginLeft="48dp"
-                      android:layout_marginStart="48dp"
-                      android:layout_marginEnd="48dp"
-                      android:layout_marginRight="48dp"
+                      android:layout_marginLeft="96dp"
+                      android:layout_marginStart="96dp"
                       android:orientation="horizontal"
                       android:weightSum="7">
 

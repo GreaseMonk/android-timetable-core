@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.*;
-import com.greasemonk.timetable.rows.InitialsRow;
 import com.mikepenz.fastadapter.adapters.FastItemAdapter;
 
 import java.util.*;
@@ -28,8 +27,8 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 	private TextView title;
 	private SwipingRecyclerView recyclerView;
 	private List<T> items;
-	private List<InitialsRow> rows;
-	private FastItemAdapter<InitialsRow> adapter;
+	private List<TimeTableRow> rows;
+	private FastItemAdapter<TimeTableRow> adapter;
 	private ProgressBar progressBar;
 	private Calendar left = Calendar.getInstance();
 	private Calendar right = Calendar.getInstance();
@@ -162,24 +161,24 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 			// Do not add rows that display nothing.
 			if (span > 0)
 			{
-				InitialsRow row = new InitialsRow(start, span, item);
+				TimeTableRow row = new TimeTableRow(start, span, item);
 				
 				rows.add(row);
 			}
 		}
 		
 		// Sort by employee name
-		Collections.sort(rows, InitialsRow.getComparator());
+		Collections.sort(rows, TimeTableRow.getComparator());
 		String temp = null;
-		for (InitialsRow row : rows)
+		for (TimeTableRow row : rows)
 		{
 			if (temp == null || !temp.equals(row.getItem().getEmployeeName()))
 			{
 				temp = row.getItem().getEmployeeName();
-				row.setInitialsVisibility(true); // Only display the initials on the top one if there's multiple
+				row.setNameVisibility(true); // Only display the name on the top one if there's multiple
 			}
 			else
-				row.setInitialsVisibility(false);
+				row.setNameVisibility(false);
 		}
 		
 		if (adapter == null)
