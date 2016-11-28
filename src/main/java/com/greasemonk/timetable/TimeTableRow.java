@@ -1,5 +1,6 @@
 package com.greasemonk.timetable;
 
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -19,7 +20,7 @@ public class TimeTableRow extends AbstractItem<TimeTableRow, TimeTableRow.ViewHo
 {
 	private AbstractRowItem item; // The stored item
 	private boolean showName;
-	private int start, span;
+	private int start, span, todayColumn = -1;
 	
 	public TimeTableRow(int start, int span, @NonNull AbstractRowItem item)
 	{
@@ -95,6 +96,9 @@ public class TimeTableRow extends AbstractItem<TimeTableRow, TimeTableRow.ViewHo
 		viewHolder.bar.setStart(start);
 		viewHolder.bar.setSpan(span);
 		viewHolder.bar.setShowCellLines(true);
+		viewHolder.bar.removeColumnColors();
+		if(todayColumn >= 0)
+			viewHolder.bar.setColumnColor(todayColumn, Color.argb(48,0,0,0));
 		
 		if (span > 0)
 			viewHolder.bar.setText(item.getProjectName());
@@ -154,5 +158,15 @@ public class TimeTableRow extends AbstractItem<TimeTableRow, TimeTableRow.ViewHo
 			}
 		}
 		return initials;
+	}
+	
+	/**
+	 * Set the column that is marked 'today', will draw a light gray background.
+	 * 
+	 * @param todayColumn the column that is the day today
+	 */
+	public void setTodayColumn(int todayColumn)
+	{
+		this.todayColumn = todayColumn;
 	}
 }

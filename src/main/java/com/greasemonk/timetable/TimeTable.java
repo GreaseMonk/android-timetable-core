@@ -86,7 +86,7 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 		recyclerView.setDelegate(this);
 		
 		left.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-		right.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+		right.add(Calendar.DATE, 6);
 		
 		columnCount = DEFAULT_COLUMN_COUNT;
 		
@@ -125,6 +125,17 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 	{
 		this.items = items;
 		rows = new ArrayList<>();
+		
+		int currentDayColumn = -1;
+		Calendar calendar = Calendar.getInstance();
+		// Check if it is the current week we are drawing for the gray highlight for the current day.
+		if(calendar.getTime().getTime() > left.getTime().getTime() && calendar.getTime().getTime() < right.getTime().getTime())
+		{
+			long difference = calendar.getTime().getTime() - left.getTime().getTime();
+			currentDayColumn = Math.round(TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS));
+		}
+		
+		
 		for (AbstractRowItem item : items)
 		{
 			// Left and Right are the TimeTable's date range
@@ -162,7 +173,7 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 			if (span > 0)
 			{
 				TimeTableRow row = new TimeTableRow(start, span, item);
-				
+				row.setTodayColumn(currentDayColumn);
 				rows.add(row);
 			}
 		}
