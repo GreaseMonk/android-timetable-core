@@ -98,7 +98,7 @@ public class TimeTableRow extends AbstractItem<TimeTableRow, TimeTableRow.ViewHo
 		viewHolder.bar.setShowCellLines(true);
 		viewHolder.bar.removeColumnColors();
 		if(todayColumn >= 0)
-			viewHolder.bar.setColumnColor(todayColumn, Color.argb(48,0,0,0));
+			viewHolder.bar.setColumnColor(todayColumn, Color.argb(12,0,0,0));
 		
 		if (span > 0)
 			viewHolder.bar.setText(item.getProjectName());

@@ -10,77 +10,117 @@
                     android:layout_height="wrap_content">
 
         <TextView android:id="@+id/title"
-                android:layout_width="match_parent"
+                  android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:gravity="center"
                   android:text="Week 26, May 2016"
                   android:textAllCaps="true"/>
-        
-        <LinearLayout android:layout_height="48dp"
+
+        <LinearLayout android:layout_height="wrap_content"
                       android:layout_width="match_parent"
+                      android:id="@+id/group2"
+                      android:layout_below="@+id/title"
                       android:layout_marginLeft="96dp"
                       android:layout_marginStart="96dp"
                       android:orientation="horizontal"
                       android:weightSum="7">
 
-            <Button android:text="31"
-                    android:id="@+id/text1"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:gravity="bottom|center_horizontal"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"/>
-            <Button android:text="32"
-                    android:id="@+id/text2"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:gravity="bottom|center_horizontal"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"/>
-            <Button android:text="33"
-                    android:id="@+id/text3"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:gravity="bottom|center_horizontal"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"/>
-            <Button android:text="34"
-                    android:id="@+id/text4"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:gravity="bottom|center_horizontal"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"/>
-            <Button android:text="35"
-                    android:id="@+id/text5"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:gravity="bottom|center_horizontal"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"/>
-            <Button android:text="36"
-                    android:id="@+id/text6"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:gravity="bottom|center_horizontal"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"/>
-            <Button android:text="37"
-                    android:id="@+id/text7"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:gravity="bottom|center_horizontal"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"/>
+            <TextView android:text="31"
+                      android:id="@+id/text1"
+                      style="@style/TextAppearance.AppCompat.Title"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1"/>
+            <TextView android:text="32"
+                      android:id="@+id/text2"
+                      style="@style/TextAppearance.AppCompat.Title"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1"/>
+            <TextView android:text="33"
+                      android:id="@+id/text3"
+                      style="@style/TextAppearance.AppCompat.Title"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1"/>
+            <TextView android:text="34"
+                      android:id="@+id/text4"
+                      style="@style/TextAppearance.AppCompat.Title"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1"/>
+            <TextView android:text="35"
+                      android:id="@+id/text5"
+                      style="@style/TextAppearance.AppCompat.Title"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1"/>
+            <TextView android:text="36"
+                      android:id="@+id/text6"
+                      style="@style/TextAppearance.AppCompat.Title"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1"/>
+            <TextView android:text="37"
+                      android:id="@+id/text7"
+                      style="@style/TextAppearance.AppCompat.Title"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1"/>
 
         </LinearLayout>
 
-    </RelativeLayout>
+        <LinearLayout android:layout_height="wrap_content"
+                      android:layout_width="match_parent"
+                      android:layout_below="@+id/group2"
+                      android:layout_marginLeft="96dp"
+                      android:layout_marginStart="96dp"
+                      android:orientation="horizontal"
+                      android:weightSum="7">
 
+            <TextView android:text="Mon"
+                      android:id="@+id/text8"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1"/>
+            <TextView android:text="Tue"
+                      android:id="@+id/text9"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1"/>
+            <TextView android:text="Wed"
+                      android:id="@+id/text10"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1"/>
+            <TextView android:text="Thu"
+                      android:id="@+id/text11"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1"/>
+            <TextView android:text="Fri"
+                      android:id="@+id/text12"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1"/>
+            <TextView android:text="Sat"
+                      android:id="@+id/text13"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1"/>
+            <TextView android:text="Sun"
+                      android:id="@+id/text14"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1"/>
+
+        </LinearLayout>
+    </RelativeLayout>
+    
     <View style="@style/divider" android:layout_below="@id/group1"/>
 
-    <ScrollView android:id="@+id/scroll_view" 
-            android:layout_width="match_parent"
+    <ScrollView android:id="@+id/scroll_view"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/group1">
 
@@ -89,10 +129,8 @@
                                                       android:layout_height="wrap_content"
                                                       android:minHeight="200dp"
         />
-
+        
     </ScrollView>
-
-    <View style="@style/divider" android:layout_below="@id/scroll_view"/>
 
     <ProgressBar android:id="@+id/progress_bar"
                  android:indeterminate="true"

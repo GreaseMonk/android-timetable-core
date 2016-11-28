@@ -6,7 +6,7 @@ A timetable designed for planning employees to projects.
 
 For example, in the construction sector, planners use a time table program at the office to sort out who works where out on the worksite, and with this library the workers can see it on the phone. The date (day/week/month) are on the horizontal axis, and the vertical axis lists the projects per employee.
 
-![current result example](https://github.com/GreaseMonk/android-timetable-core/blob/master/images/device-2016-11-25-151601.png) 
+![current result example](https://github.com/GreaseMonk/android-timetable-core/blob/master/images/device-2016-11-28-173220.png) 
 
 
 # Installation
@@ -36,7 +36,7 @@ In IntelliJ or Android Studio, you can find this under Settings>Build,Execution,
 
 2. Implement your class with AbstractRowItem
 
-```
+```java
 public class EmployeePlanItem implements AbstractRowItem
 {
 	private String employeeName, projectName;
@@ -59,10 +59,28 @@ public class EmployeePlanItem implements AbstractRowItem
 
 3. Fill the table with data:
 
-```
+```java
 timeTable = (TimeTable) findViewById(R.id.time_table);
 timeTable.setColumnCount(7);
 timeTable.update( getPlanData() );
+```
+
+Optional XML attributes:
+
+```xml
+<com.greasemonk.timetable.TimeTable
+...
+app:calTitlesColor="@color:..."		// Set the color for day numbers and day titles
+app:calNowTitlesColor="@color:..."	// Set the color for the current day/week/month number and day title
+/>
+```
+
+Optional functions:
+
+```java
+// ie. Color.argb(255,255,0,0) or Color.RED
+timetable.setTitlesColor(int color) 	// Set the color for day numbers and day titles
+timetable.setNowTitlesColor(int color)	// Set the color for the current day/week/month number and day title
 ```
 
 
