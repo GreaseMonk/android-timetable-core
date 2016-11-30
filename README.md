@@ -6,7 +6,7 @@ A timetable designed for planning employees to projects.
 
 For example, in the construction sector, planners use a time table program at the office to sort out who works where out on the worksite, and with this library the workers can see it on the phone. The date (day/week/month) are on the horizontal axis, and the vertical axis lists the projects per employee.
 
-![current result example](https://github.com/GreaseMonk/android-timetable-core/blob/develop/images/device-2016-11-28-173220.png) 
+![current result example](https://github.com/GreaseMonk/android-timetable-core/blob/develop/images/device-2016-11-30-145927.png) 
 
 
 # Installation
