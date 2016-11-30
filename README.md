@@ -15,7 +15,7 @@ Include the following in your build.gradle as a dependency:
 
 ```gradle
 dependencies {
-  compile 'com.github.greasemonk:timetable:1.0.7'
+  compile 'com.github.greasemonk:timetable:1.0.8'
 }
 ```
 
