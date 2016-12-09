@@ -8,9 +8,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.greasemonk.spannablebar.SpannableBar;
 import com.mikepenz.fastadapter.items.AbstractItem;
+import org.joda.time.DateTime;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Wiebe Geertsma on 14-11-2016.
@@ -80,6 +82,10 @@ public class TimeTableRow extends AbstractItem<TimeTableRow, TimeTableRow.ViewHo
 		//set the tag of this item dateRight this object (can be used when retrieving the view)
 		viewHolder.itemView.setTag(this);
 		
+		FixedGridLayoutManager.LayoutParams params = new FixedGridLayoutManager.LayoutParams(viewHolder.itemView.getLayoutParams());
+		params.column = new Random().nextInt(10);
+		
+		viewHolder.itemView.setLayoutParams(params);
 		
 		if(showName)
 		{
@@ -168,5 +174,19 @@ public class TimeTableRow extends AbstractItem<TimeTableRow, TimeTableRow.ViewHo
 	public void setTodayColumn(int todayColumn)
 	{
 		this.todayColumn = todayColumn;
+	}
+	
+	public boolean isBetween(DateTime input, DateTime start, DateTime end)
+	{
+		if(input.isAfter(start) && input.isBefore(end))
+		{
+			int inputDayOfYear = input.dayOfYear().get();
+			int startDayOfYear = start.dayOfYear().get();
+			int endDayOfYear = end.dayOfYear().get();
+			if(inputDayOfYear >= startDayOfYear && inputDayOfYear <= endDayOfYear)
+				return true;
+		}
+		
+		return false;
 	}
 }

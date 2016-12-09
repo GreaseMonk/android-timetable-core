@@ -2,7 +2,6 @@ package com.greasemonk.timetable;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
@@ -10,10 +9,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
 import com.mikepenz.fastadapter.adapters.FastItemAdapter;
+import org.joda.time.*;
 
 import java.text.DateFormatSymbols;
 import java.util.*;
@@ -26,19 +28,21 @@ import java.util.concurrent.TimeUnit;
 public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements SimplePagingDelegate
 {
 	private static final int DEFAULT_COLUMN_COUNT = 7;
-	private static final int DEFAULT_CURRENT_DAY_COLOR = Color.argb(255,33,150,243);
+	private static final int DEFAULT_CURRENT_DAY_COLOR = Color.argb(255, 33, 150, 243);
 	
 	private View view;
 	private TextView title;
-	private SwipingRecyclerView recyclerView;
+	private RecyclerView recyclerView, guideX, guideY;
 	private List<T> items;
 	private List<TimeTableRow> rows;
 	private FastItemAdapter<TimeTableRow> adapter;
 	private ProgressBar progressBar;
-	private Calendar left = Calendar.getInstance();
-	private Calendar right = Calendar.getInstance();
+	private DateTime left;
+	private DateTime right;
 	private TextView[] textViews;
 	private int columnCount;
+	
+	private List<RecyclerView> observedList;
 	
 	private int titlesColor, nowTitlesColor;
 	
@@ -71,10 +75,81 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 	
 	private void init(@Nullable AttributeSet attrs)
 	{
-		view = inflate(getContext(), com.greasemonk.timetable.R.layout.paging_timetable_view, null);
+		view = inflate(getContext(), com.greasemonk.timetable.R.layout.timetable_layout, null);
+		recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+		guideY = (RecyclerView) view.findViewById(R.id.guideY);
+		guideX = (RecyclerView) view.findViewById(R.id.guideX);
+		
+		initGuideX();
+		initGuideY();
+		//recyclerView.addOnScrollListener(new SynchroScrollListener(guideY, true, true));
+		
+		List<PannableItem> pannableItems = new ArrayList<>();
+		int row = 0;
+		int column = 0;
+		for (int i = 0; i < 15000; i++)
+		{
+			if (column == 100)
+			{
+				column = 0;
+				row++;
+			}
+			pannableItems.add(new PannableItem(row, column));
+			column++;
+		}
+		
+		observedList = new ArrayList<RecyclerView>()
+		{{
+			add(guideX);
+			add(guideY);
+		}};
+		
+		FixedGridLayoutManager mgr = new FixedGridLayoutManager();
+		mgr.setTotalColumnCount(100);
+		FastItemAdapter<PannableItem> adapter = new FastItemAdapter<>();
+		adapter.set(pannableItems);
+		recyclerView.setLayoutManager(mgr);
+		recyclerView.setAdapter(adapter);
+		recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
+		{
+			int state;
+			
+			@Override
+			public void onScrolled(RecyclerView recyclerView, int dx, int dy)
+			{
+				super.onScrolled(recyclerView, dx, dy);
+				if (state == RecyclerView.SCROLL_STATE_IDLE)
+				{
+					return;
+				}
+				FixedGridLayoutManager layoutMgr = (FixedGridLayoutManager) recyclerView.getLayoutManager();
+				int firstPos = layoutMgr.getFirstVisibleRow();
+				View firstVisibleItem = layoutMgr.getChildAt(0);
+				if (firstVisibleItem != null)
+				{
+					int decoratedY = layoutMgr.getDecoratedBottom(firstVisibleItem);
+					int decoratedX = layoutMgr.getDecoratedRight(firstVisibleItem);
+					
+					LinearLayoutManager managerX = (LinearLayoutManager) observedList.get(0).getLayoutManager();
+					LinearLayoutManager managerY = (LinearLayoutManager) observedList.get(1).getLayoutManager();
+					
+					if(managerX != null)
+						managerX.scrollToPositionWithOffset(firstPos + 1, decoratedX);
+					if(managerY != null)
+						managerY.scrollToPositionWithOffset(firstPos + 1, decoratedY);
+				}
+			}
+			
+			@Override
+			public void onScrollStateChanged(RecyclerView recyclerView, int newState)
+			{
+				super.onScrollStateChanged(recyclerView, newState);
+				state = newState;
+			}
+		});
+		
+		/*
 		title = (TextView) view.findViewById(R.id.title);
-		progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
-		recyclerView = (SwipingRecyclerView) view.findViewById(R.id.recycler_view);
 		textViews = new TextView[]{
 				(TextView) view.findViewById(R.id.text1),
 				(TextView) view.findViewById(R.id.text2),
@@ -108,40 +183,111 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 		}
 		
 		
-		progressBar.setVisibility(GONE);
+		//progressBar.setVisibility(GONE);
 		
 		
 		linePaint = new Paint();
 		linePaint.setColor(Color.argb(48, 0, 0, 0));
 		
 		// Initialize the list and make sure we can swipe to change pages.
-		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+		FixedGridLayoutManager mgr = new FixedGridLayoutManager();
+		mgr.setTotalColumnCount(1);
+		recyclerView.setLayoutManager(mgr);
 		recyclerView.setItemAnimator(new DefaultItemAnimator());
-		recyclerView.setDelegate(this);
+		//recyclerView.setDelegate(this);
 		
-		left.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-		right.add(Calendar.DATE, 6);
+		left = DateTime.now().withDayOfWeek(DateTimeConstants.MONDAY);
+		right = DateTime.now().withDayOfWeek(DateTimeConstants.SUNDAY);
 		
 		columnCount = DEFAULT_COLUMN_COUNT;
-		
+		*/
 		addView(view);
 		requestLayout();
 	}
 	
+	private void initGuideX()
+	{
+		FastItemAdapter<PannableItem> adapterX = new FastItemAdapter<>();
+		guideX.setHasFixedSize(true);
+		guideX.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+		guideX.addOnItemTouchListener(new RecyclerView.OnItemTouchListener()
+		{
+			@Override
+			public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e)
+			{
+				return true;
+			}
+			
+			@Override
+			public void onTouchEvent(RecyclerView rv, MotionEvent e)
+			{
+				
+			}
+			
+			@Override
+			public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept)
+			{
+				
+			}
+		});
+		List<PannableItem> guideXitems = new ArrayList<>();
+		for (int y = 0; y < 100; y++)
+		{
+			guideXitems.add(new PannableItem());
+		}
+		guideX.setAdapter(adapterX);
+		adapterX.set(guideXitems);
+	}
+	
+	private void initGuideY()
+	{
+		FastItemAdapter<PannableItem> adapterY = new FastItemAdapter<>();
+		guideY.setHasFixedSize(true);
+		guideY.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+		guideY.addOnItemTouchListener(new RecyclerView.OnItemTouchListener()
+		{
+			@Override
+			public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e)
+			{
+				return true;
+			}
+			
+			@Override
+			public void onTouchEvent(RecyclerView rv, MotionEvent e)
+			{
+				
+			}
+			
+			@Override
+			public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept)
+			{
+				
+			}
+		});
+		List<PannableItem> guideYitems = new ArrayList<>();
+		for (int y = 0; y < 150; y++)
+		{
+			guideYitems.add(new PannableItem());
+		}
+		guideY.setAdapter(adapterY);
+		adapterY.set(guideYitems);
+	}
+	
+	
 	@Override
 	public void onSwipeRight()
 	{
-		left.add(Calendar.WEEK_OF_YEAR, -1);
-		right.add(Calendar.WEEK_OF_YEAR, -1);
-		update();
+		//left.weekOfWeekyear().addToCopy(-1);
+		//right.weekOfWeekyear().addToCopy(-1);
+		//update();
 	}
 	
 	@Override
 	public void onSwipeLeft()
 	{
-		left.add(Calendar.WEEK_OF_YEAR, 1);
-		right.add(Calendar.WEEK_OF_YEAR, 1);
-		update();
+		//left.weekOfWeekyear().addToCopy(1);
+		//right.weekOfWeekyear().addToCopy(1);
+		//update();
 	}
 	
 	public void setColumnCount(int columnCount)
@@ -161,11 +307,11 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 		rows = new ArrayList<>();
 		
 		int currentDayColumn = -1;
-		Calendar calendar = Calendar.getInstance();
+		DateTime now = DateTime.now();
 		// Check if it is the current week we are drawing for the gray highlight for the current day.
-		if (calendar.getTime().getTime() > left.getTime().getTime() && calendar.getTime().getTime() < right.getTime().getTime())
+		if (now.getMillis() > left.getMillis() && now.getMillis() < right.getMillis())
 		{
-			long difference = calendar.getTime().getTime() - left.getTime().getTime();
+			long difference = now.getMillis() - left.getMillis();
 			currentDayColumn = Math.round(TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS));
 		}
 		
@@ -173,8 +319,8 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 		for (AbstractRowItem item : items)
 		{
 			// Left and Right are the TimeTable's date range
-			boolean planStartsBeforeLeft = left.getTime().getTime() > item.getPlanningStart().getTime();
-			boolean planEndsAfterRight = right.getTime().getTime() < item.getPlanningEnd().getTime();
+			boolean planStartsBeforeLeft = left.getMillis() > item.getPlanningStart().getTime();
+			boolean planEndsAfterRight = right.getMillis() < item.getPlanningEnd().getTime();
 			
 			int start, span;
 			if (planStartsBeforeLeft && planEndsAfterRight)
@@ -189,8 +335,10 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 					start = 0;
 				else
 				{
-					long difference = item.getPlanningStart().getTime() - left.getTime().getTime();
-					start = Math.round(TimeUnit.DAYS.convert(Math.abs(difference), TimeUnit.MILLISECONDS));
+					start = new DateTime(item.getPlanningStart()).dayOfWeek().get() - 1;
+					
+					//long difference = item.getPlanningStart().getTime() - left.getMillis();
+					//start = Math.round(TimeUnit.DAYS.convert(Math.abs(difference), TimeUnit.MILLISECONDS));
 				}
 				
 				// Calculate the span of the SpannableBar
@@ -198,8 +346,11 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 					span = columnCount - start;
 				else
 				{
-					long difference = item.getPlanningEnd().getTime() - right.getTime().getTime();
-					span = Math.round(TimeUnit.DAYS.convert(Math.abs(difference), TimeUnit.MILLISECONDS));
+					span = new DateTime(item.getPlanningEnd()).dayOfWeek().get() - start;
+					
+					
+					//long difference = item.getPlanningEnd().getTime() - right.getMillis();
+					//span = Math.round(TimeUnit.DAYS.convert(Math.abs(difference), TimeUnit.MILLISECONDS));
 				}
 			}
 			
@@ -241,24 +392,24 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 	
 	private void updateTitles()
 	{
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(left.getTime());
+		MutableDateTime dateTime = new MutableDateTime(left.getMillis());
+		
 		for (int i = 0; i < 7; i++)
 		{
-			textViews[i].setText(Integer.toString(calendar.get(Calendar.DAY_OF_MONTH)));
-			calendar.add(Calendar.DATE, 1);
+			textViews[i].setText(Integer.toString(dateTime.dayOfMonth().get()));
+			dateTime.add(DurationFieldType.days(), 1);
 		}
 		
 		String[] namesOfDays = DateFormatSymbols.getInstance().getShortWeekdays();
 		int current = getTodayColumn();
-		if(current >= 0)
+		if (current >= 0)
 		{
 			textViews[current].setTextColor(nowTitlesColor);
 			textViews[current + 7].setTextColor(nowTitlesColor);
 		}
 		else
 		{
-			for(TextView textView : textViews)
+			for (TextView textView : textViews)
 				textView.setTextColor(titlesColor);
 		}
 		textViews[7].setText(namesOfDays[2]);
@@ -269,26 +420,27 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 		textViews[12].setText(namesOfDays[7]);
 		textViews[13].setText(namesOfDays[1]);
 		
-		// Values calculated for the WEEK_OF_YEAR field range from 1 to 53. 
-		String titleText = "week " + (left.get(Calendar.WEEK_OF_YEAR) - 1) + ", ";
-		titleText += calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
-		titleText += " " + calendar.get(Calendar.YEAR);
+		String titleText = "week " + left.weekOfWeekyear().getAsString() + ", ";
+		titleText += left.monthOfYear().getAsText(Locale.getDefault());
+		if (left.monthOfYear().get() != right.monthOfYear().get())
+			titleText += "/" + right.monthOfYear().getAsText(Locale.getDefault());
+		titleText += " " + left.year().getAsString();
 		
 		title.setText(titleText);
 	}
 	
 	/**
 	 * Get the column number if the current display contains the current time.
-	 * 
+	 *
 	 * @return the column number for the current time, or -1 if non existent in current display
 	 */
 	private int getTodayColumn()
 	{
-		Calendar calendar = Calendar.getInstance();
+		DateTime now = DateTime.now();
 		// Check if it is the current week we are drawing for the gray highlight for the current day.
-		if (calendar.getTime().getTime() > left.getTime().getTime() && calendar.getTime().getTime() < right.getTime().getTime())
+		if (now.getMillis() > left.getMillis() && now.getMillis() < right.getMillis())
 		{
-			long difference = calendar.getTime().getTime() - left.getTime().getTime();
+			long difference = now.getMillis() - left.getMillis();
 			return Math.round(TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS));
 		}
 		return -1;
@@ -296,7 +448,7 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 	
 	/**
 	 * Set the color for day numbers and day titles
-	 * 
+	 *
 	 * @param color the color to set
 	 */
 	public void setTitlesColor(int color)
@@ -307,11 +459,23 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 	
 	/**
 	 * Set the color for the current day/week/month number and day title
-	 * 
+	 *
 	 * @param color the color to set
 	 */
 	public void setNowTitlesColor(int color)
 	{
 		nowTitlesColor = color;
 	}
+	
+	protected DateTime getLeftTime()
+	{
+		return left;
+	}
+	
+	protected DateTime getTimeRight()
+	{
+		return right;
+	}
+	
+	
 }

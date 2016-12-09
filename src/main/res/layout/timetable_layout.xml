@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp">
+                android:layout_height="wrap_content">
 
 
-    <RelativeLayout android:id="@+id/group1"
+    <!--<RelativeLayout android:id="@+id/group1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -117,28 +116,41 @@
         </LinearLayout>
     </RelativeLayout>
     
-    <View style="@style/divider" android:layout_below="@id/group1"/>
+    <View style="@style/divider" android:layout_below="@id/group1"/>-->
+    
 
-    <ScrollView android:id="@+id/scroll_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/group1">
+    <android.support.v7.widget.RecyclerView android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:id="@+id/guideX"/>
+    
+    <android.support.v7.widget.RecyclerView android:layout_width="wrap_content"
+                                            android:layout_height="match_parent"
+                                            android:layout_below="@id/guideX"
+                                            android:id="@+id/guideY"/>
 
-        <com.greasemonk.timetable.SwipingRecyclerView android:id="@+id/recycler_view"
-                                                      android:layout_width="match_parent"
-                                                      android:layout_height="wrap_content"
-                                                      android:minHeight="200dp"
-        />
-        
-    </ScrollView>
+    <android.support.v7.widget.RecyclerView android:id="@+id/recycler_view"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:layout_below="@id/guideX"
+                                            android:layout_toRightOf="@+id/guideY"
+                                            android:layout_toEndOf="@+id/guideY"/>
 
-    <ProgressBar android:id="@+id/progress_bar"
+    <!--<ProgressBar android:id="@+id/progress_bar"
                  android:indeterminate="true"
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
-                 android:layout_below="@+id/group1"
                  style="?android:attr/progressBarStyle"
-                 android:layout_centerInParent="true"/>
+                 android:layout_centerInParent="true"/>-->
+    <!--<ScrollView android:id="@+id/scroll_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/group1"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true">
+
+        
+        
+    </ScrollView>-->
 
 
 </RelativeLayout>
