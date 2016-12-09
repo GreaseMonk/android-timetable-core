@@ -6,16 +6,17 @@ import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.FrameLayout;
 
 /**
  * Created by Wiebe Geertsma on 8-12-2016.
  * E-mail: e.w.geertsma@gmail.com
+ * 
+ * Simple RecyclerView that will render the first item always at the starting position.
  */
 public class PinnedRecyclerView extends RecyclerView
 {
-	private boolean needPin = true;
-	public View frameLayout;
+	private boolean pin = true;
+	public View v;
 	
 	public PinnedRecyclerView(Context context)
 	{
@@ -32,23 +33,44 @@ public class PinnedRecyclerView extends RecyclerView
 		super(context, attrs, defStyleAttr);
 	}
 	
-	public void setNeedPin(boolean needPin)
+	/**
+	 * Set the first item as pinned
+	 * @param pin TRUE if the item should be pinned
+	 */
+	public void setPin(boolean pin)
 	{
-		this.needPin = needPin;
+		this.pin = pin;
+	}
+	
+	/**
+	 * Returns wether the first item is pinned or not.
+	 * @return TRUE if pinned
+	 */
+	public boolean getIsPinned()
+	{
+		return pin;
 	}
 	
 	@Override
 	protected void dispatchDraw(Canvas canvas)
 	{
 		super.dispatchDraw(canvas);
-		if (needPin && frameLayout != null)
+		if (pin && v != null)
 		{
 			canvas.save();
-			Rect rect = new Rect(0, 0, frameLayout.getMeasuredWidth(), frameLayout.getMeasuredHeight());
+			Rect rect = new Rect(0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
 			canvas.clipRect(rect);
-			frameLayout.draw(canvas);
+			v.draw(canvas);
 			canvas.restore();
 		}
 		
+	}
+	
+	@Override
+	protected void onLayout(boolean changed, int l, int t, int r, int b)
+	{
+		super.onLayout(changed, l, t, r, b);
+		if (pin)
+			v = v == null ? getChildAt(0) : v;
 	}
 }

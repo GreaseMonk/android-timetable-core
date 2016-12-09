@@ -119,7 +119,7 @@
     <View style="@style/divider" android:layout_below="@id/group1"/>-->
     
 
-    <android.support.v7.widget.RecyclerView android:layout_width="match_parent"
+    <com.greasemonk.timetable.PinnedRecyclerView android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:id="@+id/guideX"/>
     

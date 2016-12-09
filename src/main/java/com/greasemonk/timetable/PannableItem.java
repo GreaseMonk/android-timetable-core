@@ -15,16 +15,18 @@ import java.util.List;
 public class PannableItem extends AbstractItem<PannableItem, PannableItem.ViewHolder>
 {
 	private int row, column;
+	private boolean randomize;
 	
 	public PannableItem()
 	{
 		
 	}
 	
-	public PannableItem(int row, int column)
+	public PannableItem(int row, int column, boolean randomize)
 	{
 		this.row = row;
 		this.column = column;
+		this.randomize = randomize;
 	}
 	
 	@Override
@@ -36,7 +38,9 @@ public class PannableItem extends AbstractItem<PannableItem, PannableItem.ViewHo
 	@Override
 	public int getLayoutRes()
 	{
-		return R.layout.test_item_layout;
+		//if(randomize)
+		//	return System.currentTimeMillis() % 2 == 0 ? R.layout.item_1 : R.layout.item_2;
+		return R.layout.item_1;
 	}
 	
 	@Override

@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -32,7 +31,8 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 	
 	private View view;
 	private TextView title;
-	private RecyclerView recyclerView, guideX, guideY;
+	private RecyclerView recyclerView, guideY;
+	private PinnedRecyclerView guideX;
 	private List<T> items;
 	private List<TimeTableRow> rows;
 	private FastItemAdapter<TimeTableRow> adapter;
@@ -75,10 +75,10 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 	
 	private void init(@Nullable AttributeSet attrs)
 	{
-		view = inflate(getContext(), com.greasemonk.timetable.R.layout.timetable_layout, null);
+		view = inflate(getContext(), R.layout.timetable, null);
 		recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 		guideY = (RecyclerView) view.findViewById(R.id.guideY);
-		guideX = (RecyclerView) view.findViewById(R.id.guideX);
+		guideX = (PinnedRecyclerView) view.findViewById(R.id.guideX);
 		
 		initGuideX();
 		initGuideY();
@@ -94,7 +94,7 @@ public class TimeTable<T extends AbstractRowItem> extends FrameLayout implements
 				column = 0;
 				row++;
 			}
-			pannableItems.add(new PannableItem(row, column));
+			pannableItems.add(new PannableItem(row, column, true));
 			column++;
 		}
 		
