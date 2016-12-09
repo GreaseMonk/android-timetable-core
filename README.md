@@ -2,6 +2,8 @@
 android-timetable-core
 ===================
 
+##`Two-dimensional support is coming. Watch the repo to stay up to date about this, or check back later.`
+
 A timetable designed for planning employees to projects.
 
 For example, in the construction sector, planners use a time table program at the office to sort out who works where out on the worksite, and with this library the workers can see it on the phone. The date (day/week/month) are on the horizontal axis, and the vertical axis lists the projects per employee.
