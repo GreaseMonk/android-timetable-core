@@ -1,5 +1,6 @@
 package com.greasemonk.timetable;
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
@@ -12,49 +13,65 @@ import java.util.List;
  * Created by Wiebe Geertsma on 8-12-2016.
  * E-mail: e.w.geertsma@gmail.com
  */
-public class PannableItem extends AbstractItem<PannableItem, PannableItem.ViewHolder>
+public class TimeTableItem extends AbstractItem<TimeTableItem, TimeTableItem.ViewHolder>
 {
-	private int row, column;
-	private boolean randomize;
+	private final IGridItem item;
+	private final int row, column;
 	
-	public PannableItem()
+	public TimeTableItem(int row, int column)
 	{
-		
-	}
-	
-	public PannableItem(int row, int column, boolean randomize)
-	{
+		// Make a blank item
+		item = null;
 		this.row = row;
 		this.column = column;
-		this.randomize = randomize;
+	}
+	
+	public TimeTableItem(IGridItem item, int row, int column)
+	{
+		this.item = item;
+		this.row = row;
+		this.column = column;
 	}
 	
 	@Override
 	public int getType()
 	{
-		return 0;
+		return R.id.timetable_item;
+	}
+	
+	@Override
+	public long getIdentifier()
+	{
+		return System.identityHashCode(this);
 	}
 	
 	@Override
 	public int getLayoutRes()
 	{
-		//if(randomize)
-		//	return System.currentTimeMillis() % 2 == 0 ? R.layout.item_1 : R.layout.item_2;
 		return R.layout.item_1;
 	}
 	
 	@Override
-	public void bindView(PannableItem.ViewHolder holder, List payloads)
+	public void bindView(TimeTableItem.ViewHolder holder, List payloads)
 	{
 		super.bindView(holder, payloads);
-		if(holder.itemView.getLayoutParams() != null && !(row == 0 && column == 0))
+		if(holder.itemView.getLayoutParams() != null)
 		{
 			LayoutParams params = new LayoutParams(holder.itemView.getLayoutParams());
 			params.column = column;
 			params.row = row;
 			holder.itemView.setLayoutParams(params);
 		}
-		holder.textView.setText(row + "," + column);
+		if(item != null)
+		{
+			holder.textView.setText(item.getName());
+			holder.textView.setBackgroundColor(Color.argb(25, 0,0,255));
+		}
+		else
+		{
+			holder.textView.setText("");
+			holder.textView.setBackgroundResource(R.drawable.item_bg);
+		}
 	}
 	
 	protected static class ViewHolder extends RecyclerView.ViewHolder
@@ -66,5 +83,10 @@ public class PannableItem extends AbstractItem<PannableItem, PannableItem.ViewHo
 			super(view);
 			this.textView = (TextView) view.findViewById(R.id.text1);
 		}
+	}
+	
+	public IGridItem getItem()
+	{
+		return item;
 	}
 }

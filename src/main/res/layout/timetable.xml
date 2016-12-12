@@ -117,15 +117,25 @@
     </RelativeLayout>
     
     <View style="@style/divider" android:layout_below="@id/group1"/>-->
-    
 
-    <com.greasemonk.timetable.PinnedRecyclerView android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:id="@+id/guideX"/>
-    
+    <android.support.v7.widget.RecyclerView android:layout_width="match_parent"
+                                                 android:layout_height="wrap_content"
+                                                 android:minHeight="48dp"
+                                                 android:id="@+id/guideX"
+                                                 android:layout_marginLeft="96dp"
+                                                 android:layout_marginStart="96dp"
+                                                 android:layout_alignParentTop="true"
+                                                 android:layout_alignParentLeft="true"
+                                                 android:layout_alignParentStart="true"
+                                                 android:layout_alignParentEnd="true"
+                                                 android:layout_alignParentRight="true"/>
     <android.support.v7.widget.RecyclerView android:layout_width="wrap_content"
                                             android:layout_height="match_parent"
                                             android:layout_below="@id/guideX"
+                                            android:layout_alignParentStart="true"
+                                            android:layout_alignParentLeft="true"
+                                            android:layout_alignParentBottom="true"
+                                            android:minWidth="48dp"
                                             android:id="@+id/guideY"/>
 
     <android.support.v7.widget.RecyclerView android:id="@+id/recycler_view"
@@ -134,6 +144,7 @@
                                             android:layout_below="@id/guideX"
                                             android:layout_toRightOf="@+id/guideY"
                                             android:layout_toEndOf="@+id/guideY"/>
+    
 
     <!--<ProgressBar android:id="@+id/progress_bar"
                  android:indeterminate="true"

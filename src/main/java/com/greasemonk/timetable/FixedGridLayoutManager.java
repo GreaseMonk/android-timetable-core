@@ -418,7 +418,7 @@ public class FixedGridLayoutManager extends RecyclerView.LayoutManager {
 			}
 			
 			if (nextPosition < 0 || nextPosition >= state.getItemCount()) {
-				//Item space beyond the data set, don't attempt to add a view
+				//IGridItem space beyond the data set, don't attempt to add a view
 				continue;
 			}
 			
