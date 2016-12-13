@@ -65,99 +65,9 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 		guideY = (RecyclerView) view.findViewById(R.id.guideY);
 		guideX = (RecyclerView) view.findViewById(R.id.guideX);
 		
-		guideX.setHasFixedSize(true);
-		guideX.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-		guideX.addOnItemTouchListener(new RecyclerView.OnItemTouchListener()
-		{
-			@Override
-			public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e)
-			{
-				return true;
-			}
-			
-			@Override
-			public void onTouchEvent(RecyclerView rv, MotionEvent e)
-			{
-				
-			}
-			
-			@Override
-			public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept)
-			{
-				
-			}
-		});
 		
-		guideY.setHasFixedSize(true);
-		guideY.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-		guideY.addOnItemTouchListener(new RecyclerView.OnItemTouchListener()
-		{
-			@Override
-			public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e)
-			{
-				return true;
-			}
-			
-			@Override
-			public void onTouchEvent(RecyclerView rv, MotionEvent e)
-			{
-				
-			}
-			
-			@Override
-			public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept)
-			{
-				
-			}
-		});
 		
-		observedList = new ArrayList<RecyclerView>()
-		{{
-			add(guideX);
-			add(guideY);
-		}};
 		
-		FixedGridLayoutManager mgr = new FixedGridLayoutManager();
-		mgr.setTotalColumnCount(61);
-		recyclerView.setLayoutManager(mgr);
-		recyclerView.setItemAnimator(new DefaultItemAnimator());
-		recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
-		{
-			int state;
-			
-			@Override
-			public void onScrolled(RecyclerView recyclerView, int dx, int dy)
-			{
-				super.onScrolled(recyclerView, dx, dy);
-				if (state == RecyclerView.SCROLL_STATE_IDLE)
-				{
-					return;
-				}
-				FixedGridLayoutManager layoutMgr = (FixedGridLayoutManager) recyclerView.getLayoutManager();
-				int firstPos = layoutMgr.getFirstVisibleRow();
-				View firstVisibleItem = layoutMgr.getChildAt(0);
-				if (firstVisibleItem != null)
-				{
-					int decoratedY = layoutMgr.getDecoratedBottom(firstVisibleItem);
-					int decoratedX = layoutMgr.getDecoratedRight(firstVisibleItem);
-					
-					LinearLayoutManager managerX = (LinearLayoutManager) observedList.get(0).getLayoutManager();
-					LinearLayoutManager managerY = (LinearLayoutManager) observedList.get(1).getLayoutManager();
-					
-					if(managerX != null)
-						managerX.scrollToPositionWithOffset(firstPos + 1, decoratedX);
-					if(managerY != null)
-						managerY.scrollToPositionWithOffset(firstPos + 1, decoratedY);
-				}
-			}
-			
-			@Override
-			public void onScrollStateChanged(RecyclerView recyclerView, int newState)
-			{
-				super.onScrollStateChanged(recyclerView, newState);
-				state = newState;
-			}
-		});
 		
 		/*if (attrs != null)
 		{
@@ -183,6 +93,7 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 	{
 		this.items = new ArrayList<>();
 		
+		
 		if(left == null || right == null)
 		{
 			left = DateTime.now().monthOfYear().addToCopy(-1);
@@ -202,7 +113,7 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 			current = current.dayOfYear().addToCopy(1);
 		}
 		setGuideXItems((List<X>) itemsX);
-		
+		construct(itemsX.size());
 		
 		
 		List<GuideYItem> itemsY = new ArrayList<>();
@@ -257,6 +168,108 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 		setGuideYItems((List<Y>) itemsY);
 		gridAdapter.set(this.items);
 		requestLayout();
+	}
+	
+	private void construct(final int itemCount)
+	{
+		guideX.setHasFixedSize(true);
+		guideX.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+		guideX.addOnItemTouchListener(new RecyclerView.OnItemTouchListener()
+		{
+			@Override
+			public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e)
+			{
+				return true;
+			}
+			
+			@Override
+			public void onTouchEvent(RecyclerView rv, MotionEvent e)
+			{
+				
+			}
+			
+			@Override
+			public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept)
+			{
+				
+			}
+		});
+		
+		guideY.setHasFixedSize(true);
+		guideY.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+		guideY.addOnItemTouchListener(new RecyclerView.OnItemTouchListener()
+		{
+			@Override
+			public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e)
+			{
+				return true;
+			}
+			
+			@Override
+			public void onTouchEvent(RecyclerView rv, MotionEvent e)
+			{
+				
+			}
+			
+			@Override
+			public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept)
+			{
+				
+			}
+		});
+		
+		observedList = new ArrayList<RecyclerView>()
+		{{
+			add(guideX);
+			add(guideY);
+		}};
+		
+		FixedGridLayoutManager mgr = new FixedGridLayoutManager();
+		mgr.setTotalColumnCount(itemCount);
+		recyclerView.setLayoutManager(mgr);
+		recyclerView.setItemAnimator(new DefaultItemAnimator());
+		recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
+		{
+			int state;
+			
+			@Override
+			public void onScrolled(RecyclerView recyclerView, int dx, int dy)
+			{
+				super.onScrolled(recyclerView, dx, dy);
+				if (state == RecyclerView.SCROLL_STATE_IDLE)
+				{
+					return;
+				}
+				
+				final LinearLayoutManager managerX = (LinearLayoutManager) observedList.get(0).getLayoutManager();
+				final LinearLayoutManager managerY = (LinearLayoutManager) observedList.get(1).getLayoutManager();
+				final FixedGridLayoutManager layoutMgr = (FixedGridLayoutManager) recyclerView.getLayoutManager();
+				
+				final int firstRow = layoutMgr.getFirstVisibleRow();
+				final int firstColumn = layoutMgr.getFirstVisibleColumn();
+				
+				View firstVisibleItem = layoutMgr.getChildAt(0);
+				if (firstVisibleItem != null)
+				{
+					int decoratedY = layoutMgr.getDecoratedBottom(firstVisibleItem);
+					int decoratedX = layoutMgr.getDecoratedLeft(firstVisibleItem);
+					
+					
+					
+					if(managerX != null)
+						managerX.scrollToPositionWithOffset(firstColumn + 1, decoratedX);
+					if(managerY != null)
+						managerY.scrollToPositionWithOffset(firstRow + 1, decoratedY);
+				}
+			}
+			
+			@Override
+			public void onScrollStateChanged(RecyclerView recyclerView, int newState)
+			{
+				super.onScrollStateChanged(recyclerView, newState);
+				state = newState;
+			}
+		});
 	}
 	
 	/**
