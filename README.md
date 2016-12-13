@@ -24,7 +24,7 @@ In IntelliJ or Android Studio, you can find this under Settings>Build,Execution,
 
 # Usage
 
-1. Include the layout in your XML:
+###1. Include the layout in your XML
 
 ```xml
 <com.greasemonk.timetable.TimeTable android:id="@+id/time_table"
@@ -32,9 +32,7 @@ In IntelliJ or Android Studio, you can find this under Settings>Build,Execution,
                                         android:layout_height="wrap_content"/>
 ```
 
-2. Implement your class with IGridItem
-
-This is the most basic implementation example.
+###2. Implement your class with IGridItem
 
 ```java
 public class EmployeePlanItem implements IGridItem
@@ -78,7 +76,7 @@ public class EmployeePlanItem implements IGridItem
 }
 ```
 
-3. Fill the table with data:
+###3. Fill the table with data
 
 ```java
 timeTable = (TimeTable) findViewById(R.id.time_table);
