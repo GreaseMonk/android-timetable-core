@@ -6,7 +6,7 @@ A timetable designed for planning employees to projects.
 
 For example, in the construction sector, planners use a time table program at the office to sort out who works where out on the worksite, and with this library the workers can see it on the phone. The date (day/week/month) are on the horizontal axis, and the vertical axis lists the projects per employee.
 
-![current result example](https://github.com/GreaseMonk/android-timetable-core/blob/develop/images/device-2016-11-30-145927.png) 
+![Demo gif](https://github.com/GreaseMonk/android-timetable-core/blob/develop/images/giphy_1.gif) 
 
 
 # Installation
@@ -14,9 +14,7 @@ For example, in the construction sector, planners use a time table program at th
 Include the following in your build.gradle as a dependency:
 
 ```gradle
-dependencies {
-  compile 'com.github.greasemonk:timetable:1.0.7'
-}
+// Check back soon, will update to maven in near future
 ```
 
 If this fails, make sure to check if you have synchronized your local repositories.
@@ -34,55 +32,58 @@ In IntelliJ or Android Studio, you can find this under Settings>Build,Execution,
                                         android:layout_height="wrap_content"/>
 ```
 
-2. Implement your class with AbstractRowItem
+2. Implement your class with IGridItem
+
+This is the most basic implementation example.
 
 ```java
-public class EmployeePlanItem implements AbstractRowItem
+public class EmployeePlanItem implements IGridItem
 {
 	private String employeeName, projectName;
 	private Date planStart, planEnd;
-  
-  ...
-  
-  @Override
-	public Date getPlanningStart(){ return planStart; }
+	
+	public EmployeePlanItem() {}
+	
+	public EmployeePlanItem(String employeeName, String projectName, Date planStart, Date planEnd)
+	{
+		this.employeeName = employeeName;
+		this.projectName = projectName;
+		this.planStart = planStart;
+		this.planEnd = planEnd;
+	}
 	
 	@Override
-	public Date getPlanningEnd(){ return planEnd; }
+	public Date getStartDate()
+	{
+		return planStart;
+	}
 	
 	@Override
-	public String getEmployeeName(){  return employeeName; }
+	public Date getEndDate()
+	{
+		return planEnd;
+	}
 	
 	@Override
-	public String getProjectName(){ return projectName; }
+	public String getName()
+	{
+		return projectName;
+	}
+	
+	@Override
+	public String getPersonName()
+	{
+		return employeeName;
+	}
+}
 ```
 
 3. Fill the table with data:
 
 ```java
 timeTable = (TimeTable) findViewById(R.id.time_table);
-timeTable.setColumnCount(7);
-timeTable.update( getPlanData() );
+timeTable.setItems(generateSamplePlanData());
 ```
-
-Optional XML attributes:
-
-```xml
-<com.greasemonk.timetable.TimeTable
-...
-app:calTitlesColor="@color:..."		// Set the color for day numbers and day titles
-app:calNowTitlesColor="@color:..."	// Set the color for the current day/week/month number and day title
-/>
-```
-
-Optional functions:
-
-```java
-// ie. Color.argb(255,255,0,0) or Color.RED
-timetable.setTitlesColor(int color) 	// Set the color for day numbers and day titles
-timetable.setNowTitlesColor(int color)	// Set the color for the current day/week/month number and day title
-```
-
 
 ## Dependencies
 
