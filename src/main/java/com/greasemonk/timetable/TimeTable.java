@@ -89,7 +89,7 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 		requestLayout();
 	}
 	
-	public void update(@NonNull List<T> items)
+	public void setItems(@NonNull List<T> items)
 	{
 		this.items = new ArrayList<>();
 		
