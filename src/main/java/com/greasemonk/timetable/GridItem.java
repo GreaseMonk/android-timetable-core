@@ -13,12 +13,14 @@ import java.util.List;
  * Created by Wiebe Geertsma on 8-12-2016.
  * E-mail: e.w.geertsma@gmail.com
  */
-public class TimeTableItem extends AbstractItem<TimeTableItem, TimeTableItem.ViewHolder>
+public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 {
 	private final IGridItem item;
-	private final int row, column;
+	private final int row;
+	private final int column;
+	private boolean isStart;
 	
-	public TimeTableItem(int row, int column)
+	public GridItem(int row, int column)
 	{
 		// Make a blank item
 		item = null;
@@ -26,7 +28,7 @@ public class TimeTableItem extends AbstractItem<TimeTableItem, TimeTableItem.Vie
 		this.column = column;
 	}
 	
-	public TimeTableItem(IGridItem item, int row, int column)
+	public GridItem(IGridItem item, int row, int column)
 	{
 		this.item = item;
 		this.row = row;
@@ -52,7 +54,7 @@ public class TimeTableItem extends AbstractItem<TimeTableItem, TimeTableItem.Vie
 	}
 	
 	@Override
-	public void bindView(TimeTableItem.ViewHolder holder, List payloads)
+	public void bindView(GridItem.ViewHolder holder, List payloads)
 	{
 		super.bindView(holder, payloads);
 		if(holder.itemView.getLayoutParams() != null)
@@ -74,6 +76,16 @@ public class TimeTableItem extends AbstractItem<TimeTableItem, TimeTableItem.Vie
 		}
 	}
 	
+	public boolean isStart()
+	{
+		return isStart;
+	}
+	
+	public void setStart(boolean start)
+	{
+		isStart = start;
+	}
+	
 	protected static class ViewHolder extends RecyclerView.ViewHolder
 	{
 		protected TextView textView;
@@ -88,5 +100,20 @@ public class TimeTableItem extends AbstractItem<TimeTableItem, TimeTableItem.Vie
 	public IGridItem getItem()
 	{
 		return item;
+	}
+	
+	public int getRow()
+	{
+		return row;
+	}
+	
+	public int getColumn()
+	{
+		return column;
+	}
+	
+	public boolean isEmpty()
+	{
+		return item == null;
 	}
 }

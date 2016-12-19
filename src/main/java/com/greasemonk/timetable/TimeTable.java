@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
@@ -27,9 +28,10 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 	private final String DTAG = "TimeTable";
 	
 	private RecyclerView recyclerView, guideY, guideX;
-	private List<TimeTableItem> items;
+	private List<GridItem> items;
 	private List<RecyclerView> observedList;
 	private DateTime left, right;
+	private TimeRange timeRange;
 	
 	private FastItemAdapter guideXadapter, guideYadapter, gridAdapter;
 	
@@ -96,9 +98,9 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 		
 		if(left == null || right == null)
 		{
-			left = DateTime.now().monthOfYear().addToCopy(-1);
-			right = DateTime.now().monthOfYear().addToCopy(1);
-			setTimeRange(left.toDate(), right.toDate());
+			left = DateTime.now().monthOfYear().addToCopy(-1).millisOfDay().setCopy(0);
+			right = DateTime.now().monthOfYear().addToCopy(1).dayOfYear().addToCopy(-1).millisOfDay().setCopy(0);
+			setTimeRange(left, right);
 		}
 		
 		
@@ -113,49 +115,88 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 			current = current.dayOfYear().addToCopy(1);
 		}
 		setGuideXItems((List<X>) itemsX);
-		construct(itemsX.size());
+		final int columns = timeRange.getColumnCount();
+		construct(columns);
 		
+		List<Pair<String, List<IGridItem>>> pairs = new ArrayList<>();
 		
-		List<GuideYItem> itemsY = new ArrayList<>();
-		int row = 0;
 		for(int i = 0; i < items.size(); i++)
 		{
 			T item = items.get(i);
-			
-			/**
-			 * Find the Y item (Person Name)
-			 */
-			GuideYItem itemY = null;
-			for(GuideYItem guideYitem : itemsY)
+			Pair<String, List<IGridItem>> pair = null;
+			for(Pair<String, List<IGridItem>> p : pairs)
 			{
-				if(guideYitem.getName().equals(item.getPersonName()))
-					itemY = guideYitem;
+				if(p.first.equals(item.getPersonName()))
+				{
+					pair = p;
+					break;
+				}
+			}
+			
+			if(pair == null)
+				pair = new Pair<String, List<IGridItem>>(item.getPersonName(), new ArrayList<IGridItem>());
+			
+			pair.second.add(item);
+			
+			if(!pairs.contains(pair))
+				pairs.add(pair);
+			/*T item = items.get(i);
+			GuideYItem itemY = null;
+			
+			//
+			// Find the Y item (Person Name)
+			//
+			if(itemY == null)
+			{
+				for(GuideYItem guideYitem : itemsY)
+				{
+					if(guideYitem.getName().equals(item.getPersonName()))
+						itemY = guideYitem;
+				}
+				
 			}
 			if(itemY == null)
 				itemY = new GuideYItem(item.getPersonName());
 			
 			itemsY.add(itemY);
 			
-			/**
-			 * Generate an entire row for each day in the X row
-			 * Each item that is not between start and end date, will have a blank cell generated.
-			 */
+			//
+			// Generate an entire row for each day in the X row
+			// Each item that is not between start and end date, will have a blank cell generated.
+			//
 			int column = 0;
 			for(GuideXItem itemX : itemsX)
 			{
 				long columnMillis = itemX.getDateTime().getMillis();
 				if(columnMillis > item.getStartDate().getTime() && columnMillis < item.getEndDate().getTime())
-					this.items.add(new TimeTableItem(item, row, column));
+					this.items.add(new GridItem(item, row, column));
 				else
-					this.items.add(new TimeTableItem(row, column)); // Make a blank cell
+					this.items.add(new GridItem(row, column)); // Make a blank cell
 				
 				column++;
 			}
-			
 			row++;
+			*/
+		}
+		
+		List<GridItemRow> rows = new ArrayList<>();
+		for(Pair<String, List<IGridItem>> pair : pairs)
+		{
+			GridItemRow gridRow = new GridItemRow(pair.first, new TimeRange(left, right), pair.second);
+			rows.add(gridRow);
 		}
 		
 		
+		List<GridItem> allGridItems = new ArrayList<>();
+		List<GuideYItem> itemsY = new ArrayList<>();
+		for(GridItemRow r : rows)
+		{
+			List<GridItem> l = r.getItems();
+			allGridItems.addAll(l);
+			
+			for(int i = 0; i < l.size() / columns; i++)
+				itemsY.add(new GuideYItem(i == 0 ? r.getPersonName() : "")); // only write the name once.
+		}
 		
 		if (gridAdapter == null)
 		{
@@ -166,7 +207,7 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 		}
 		
 		setGuideYItems((List<Y>) itemsY);
-		gridAdapter.set(this.items);
+		gridAdapter.set(allGridItems);
 		requestLayout();
 	}
 	
@@ -278,19 +319,18 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 	 * @param left the time on the left end
 	 * @param right the time on the right end
 	 */
-	public void setTimeRange(Date left, Date right)
+	public void setTimeRange(DateTime left, DateTime right)
 	{
-		DateTime timeLeft = new DateTime(left);
-		DateTime timeRight = new DateTime(right);
-		
-		if(timeLeft.getMillis() > timeRight.getMillis())
+		if(left.getMillis() > right.getMillis())
 		{
 			Log.e(DTAG, "setTimeRange 'left' cannot be higher than 'right'.");
 			return;
 		}
 		
-		this.left = timeLeft;
-		this.right = timeRight;
+		this.left = left;
+		this.right = right;
+		
+		this.timeRange = new TimeRange(new DateTime(left), new DateTime(right));
 	}
 	
 	public void setGuideXItems(List<X> items)
