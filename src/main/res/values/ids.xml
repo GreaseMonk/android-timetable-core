@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="timetable_initials_row_id" type="id">6790</item>
+    <item name="timetable_item" type="id"/>
+    <item name="timetable_guide_x_item" type="id"/>
+    <item name="timetable_guide_y_item" type="id"/>
 </resources>

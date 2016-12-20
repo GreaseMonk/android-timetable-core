@@ -14,7 +14,7 @@ ext {
     siteUrl = 'https://github.com/GreaseMonk/android-timetable-core'
     gitUrl = 'https://github.com/GreaseMonk/androit-timetable-core.git'
 
-    libraryVersion = '1.0.8'
+    libraryVersion = '1.2.0'
 
     developerId = 'greasemonk'
     developerName = 'Wiebe Geertsma'
@@ -28,14 +28,15 @@ ext {
 group='com.github.GreaseMonk'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.1'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 108
-        versionName '1.0.8'
+        versionCode 120
+        versionName '1.2.0'
+        multiDexEnabled  true
         setProperty("archivesBaseName", "timetable")
     }
     buildTypes {
@@ -44,16 +45,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    productFlavors {
+    }
     lintOptions {
         abortOnError false
     }
 }
 
 dependencies {
-    compile project(':spannablebar');
-    compile 'com.android.support:appcompat-v7:25.0.1'
-    compile 'com.android.support:support-annotations:25.0.1'
-    compile 'com.android.support:recyclerview-v7:25.0.1'
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:25.1.0'
+    compile 'com.android.support:support-annotations:25.1.0'
+    compile 'com.android.support:recyclerview-v7:25.1.0'
+    compile 'joda-time:joda-time:2.9.6'
 
     // https://github.com/mikepenz/fastadapter
     compile('com.mikepenz:fastadapter:1.8.2@aar') { transitive = true }
@@ -71,12 +75,13 @@ buildscript {
     }
 }
 
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.14.1'
+task javadoc(type: Javadoc){
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    failOnError false
 }
 
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
 apply from: 'https://raw.githubusercontent.com/GreaseMonk/JCenter/master/installv1.gradle'
 apply from: 'https://raw.githubusercontent.com/GreaseMonk/JCenter/master/bintrayv1.gradle'
