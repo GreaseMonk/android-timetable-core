@@ -5,6 +5,7 @@ android-timetable-core
 
 A timetable designed for planning employees to projects.
 
+[Click here to download the demo APK](https://github.com/GreaseMonk/android-timetable-core/blob/develop/apk/20-12-2016_app-debug-v1.0.1-DEBUG-c101.apk)
 ![Demo gif](https://github.com/GreaseMonk/android-timetable-core/blob/develop/images/giphy_1.gif) 
 
 
