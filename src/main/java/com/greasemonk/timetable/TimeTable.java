@@ -28,7 +28,6 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 	private final String DTAG = "TimeTable";
 	
 	private RecyclerView recyclerView, guideY, guideX;
-	private List<GridItem> items;
 	private List<RecyclerView> observedList;
 	private DateTime left, right;
 	private TimeRange timeRange;
@@ -67,10 +66,6 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 		guideY = (RecyclerView) view.findViewById(R.id.guideY);
 		guideX = (RecyclerView) view.findViewById(R.id.guideX);
 		
-		
-		
-		
-		
 		/*if (attrs != null)
 		{
 			TypedArray typedArray = getContext().getTheme().obtainStyledAttributes(
@@ -91,11 +86,13 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 		requestLayout();
 	}
 	
+	/**
+	 * Sets the items to be displayed. 
+	 * 
+	 * @param items the items to be displayed.
+	 */
 	public void setItems(@NonNull List<T> items)
 	{
-		this.items = new ArrayList<>();
-		
-		
 		if(left == null || right == null)
 		{
 			left = DateTime.now().monthOfYear().addToCopy(-1).millisOfDay().setCopy(0);
@@ -103,10 +100,7 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 			setTimeRange(left, right);
 		}
 		
-		
-		/**
-		 * Generate items spanning from start(left) to end(right)
-		 */
+		// Generate items spanning from start(left) to end(right)
 		DateTime current = left.millisOfDay().addToCopy(1);
 		List<GuideXItem> itemsX = new ArrayList<>();
 		while(current.getMillis() < right.getMillis())
@@ -140,43 +134,6 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 			
 			if(!pairs.contains(pair))
 				pairs.add(pair);
-			/*T item = items.get(i);
-			GuideYItem itemY = null;
-			
-			//
-			// Find the Y item (Person Name)
-			//
-			if(itemY == null)
-			{
-				for(GuideYItem guideYitem : itemsY)
-				{
-					if(guideYitem.getName().equals(item.getPersonName()))
-						itemY = guideYitem;
-				}
-				
-			}
-			if(itemY == null)
-				itemY = new GuideYItem(item.getPersonName());
-			
-			itemsY.add(itemY);
-			
-			//
-			// Generate an entire row for each day in the X row
-			// Each item that is not between start and end date, will have a blank cell generated.
-			//
-			int column = 0;
-			for(GuideXItem itemX : itemsX)
-			{
-				long columnMillis = itemX.getDateTime().getMillis();
-				if(columnMillis > item.getStartDate().getTime() && columnMillis < item.getEndDate().getTime())
-					this.items.add(new GridItem(item, row, column));
-				else
-					this.items.add(new GridItem(row, column)); // Make a blank cell
-				
-				column++;
-			}
-			row++;
-			*/
 		}
 		
 		List<GridItemRow> rows = new ArrayList<>();
@@ -369,43 +326,4 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 	{
 		return right;
 	}
-	
-	/*private void updateTitles()
-	{
-		MutableDateTime dateTime = new MutableDateTime(left.getMillis());
-		
-		for (int i = 0; i < 7; i++)
-		{
-			textViews[i].setText(Integer.toString(dateTime.dayOfMonth().get()));
-			dateTime.add(DurationFieldType.days(), 1);
-		}
-		
-		String[] namesOfDays = DateFormatSymbols.getInstance().getShortWeekdays();
-		int current = getTodayColumn();
-		if (current >= 0)
-		{
-			textViews[current].setTextColor(nowTitlesColor);
-			textViews[current + 7].setTextColor(nowTitlesColor);
-		}
-		else
-		{
-			for (TextView textView : textViews)
-				textView.setTextColor(titlesColor);
-		}
-		textViews[7].setText(namesOfDays[2]);
-		textViews[8].setText(namesOfDays[3]);
-		textViews[9].setText(namesOfDays[4]);
-		textViews[10].setText(namesOfDays[5]);
-		textViews[11].setText(namesOfDays[6]);
-		textViews[12].setText(namesOfDays[7]);
-		textViews[13].setText(namesOfDays[1]);
-		
-		String titleText = "week " + left.weekOfWeekyear().getAsString() + ", ";
-		titleText += left.monthOfYear().getAsText(Locale.getDefault());
-		if (left.monthOfYear().get() != right.monthOfYear().get())
-			titleText += "/" + right.monthOfYear().getAsText(Locale.getDefault());
-		titleText += " " + left.year().getAsString();
-		
-		title.setText(titleText);
-	}*/
 }

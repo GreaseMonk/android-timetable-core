@@ -14,7 +14,7 @@ ext {
     siteUrl = 'https://github.com/GreaseMonk/android-timetable-core'
     gitUrl = 'https://github.com/GreaseMonk/androit-timetable-core.git'
 
-    libraryVersion = '1.0.8'
+    libraryVersion = '1.2.0'
 
     developerId = 'greasemonk'
     developerName = 'Wiebe Geertsma'
@@ -34,8 +34,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 108
-        versionName '1.0.8'
+        versionCode 120
+        versionName '1.2.0'
         setProperty("archivesBaseName", "timetable")
     }
     buildTypes {

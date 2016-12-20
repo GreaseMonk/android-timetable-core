@@ -3,7 +3,11 @@ package com.greasemonk.timetable;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 
+import java.util.Date;
+
 /**
+ * Class to hold two simple dates so all the time handling can be done here
+ * 
  * Created by Wiebe Geertsma on 19-12-2016.
  * E-mail: e.w.geertsma@gmail.com
  */
@@ -15,6 +19,18 @@ public class TimeRange
 	{
 		this.start = start;
 		this.end = end;
+	}
+	
+	public TimeRange(Date start, Date end)
+	{
+		this.start = new DateTime(start);
+		this.end = new DateTime(end);
+	}
+	
+	public TimeRange(long millisStart, long millisEnd)
+	{
+		this.start = new DateTime(millisStart);
+		this.end = new DateTime(millisEnd);
 	}
 	
 	/**
