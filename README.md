@@ -23,11 +23,11 @@ In IntelliJ or Android Studio, you can find this under Settings>Build,Execution,
 
 ## Benefits
 
--You only need the name of the plan, the person's name, and a start & end date.
--No need for multi-dimensional arrays
--No need to calculate the X,Y / row,colum
--Pannable in X and Y
--Optimized for best performance
+- You only need the name of the plan, the person's name, and a start & end date.
+- No need for multi-dimensional arrays
+- No need to calculate the X,Y / row,colum
+- Pannable in X and Y
+- Optimized for best performance
 
 # Usage
 
