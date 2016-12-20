@@ -35,7 +35,6 @@ public class TimeRange
 	
 	/**
 	 * Check if the time ranges overlap
-	 * @see <a href="http://stackoverflow.com/questions/325933/determine-whether-two-date-ranges-overlap">http://stackoverflow.com/questions/325933/determine-whether-two-date-ranges-overlap</a>
 	 * 
 	 * @param other the other time range to check with
 	 * @return TRUE if overlapping
