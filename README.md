@@ -59,7 +59,7 @@ public class EmployeePlanItem implements IGridItem
 		this.timeRange = new TimeRange(planStart, planEnd);
 	}
 	
-	@Nullable
+	@Override
 	public TimeRange getTimeRange()
 	{
 		return timeRange;
