@@ -38,7 +38,7 @@ In IntelliJ or Android Studio, you can find this under Settings>Build,Execution,
 public class EmployeePlanItem implements IGridItem
 {
 	private String employeeName, projectName;
-	private Date planStart, planEnd;
+	private TimeRange timeRange;
 	
 	public EmployeePlanItem() {}
 	
@@ -46,20 +46,13 @@ public class EmployeePlanItem implements IGridItem
 	{
 		this.employeeName = employeeName;
 		this.projectName = projectName;
-		this.planStart = planStart;
-		this.planEnd = planEnd;
+		this.timeRange = new TimeRange(planStart, planEnd);
 	}
 	
-	@Override
-	public Date getStartDate()
+	@Nullable
+	public TimeRange getTimeRange()
 	{
-		return planStart;
-	}
-	
-	@Override
-	public Date getEndDate()
-	{
-		return planEnd;
+		return timeRange;
 	}
 	
 	@Override
