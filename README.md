@@ -13,7 +13,9 @@ A timetable designed for planning employees to projects.
 Include the following in your build.gradle as a dependency:
 
 ```gradle
-// Check back soon, will update to maven in near future
+dependencies {
+	compile 'com.github.greasemonk:timetable:1.2.0'
+}
 ```
 
 If this fails, make sure to check if you have synchronized your local repositories.
