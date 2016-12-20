@@ -28,6 +28,7 @@ In IntelliJ or Android Studio, you can find this under Settings>Build,Execution,
 - No need to calculate the X,Y / row,colum
 - Pannable in X and Y
 - Optimized for best performance
+- Multiple items are merged in a single row.
 
 
 # Usage
