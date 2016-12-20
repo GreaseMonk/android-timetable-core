@@ -1,10 +1,9 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.greasemonk/timetable/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.github.greasemonk/timetable) [![API](https://img.shields.io/badge/API-16%2B-yellow.svg?style=flat)](https://android-arsenal.com/api?level=16)
 android-timetable-core
 ===================
+(PLEASE SEND ME YOUR PULL REQUESTS, ALL WELCOME! :-) )
 
 A timetable designed for planning employees to projects.
-
-For example, in the construction sector, planners use a time table program at the office to sort out who works where out on the worksite, and with this library the workers can see it on the phone. The date (day/week/month) are on the horizontal axis, and the vertical axis lists the projects per employee.
 
 ![Demo gif](https://github.com/GreaseMonk/android-timetable-core/blob/develop/images/giphy_1.gif) 
 
@@ -21,6 +20,7 @@ If this fails, make sure to check if you have synchronized your local repositori
 
 In IntelliJ or Android Studio, you can find this under Settings>Build,Execution,Deployment>Build Tools>Maven>Repositories.
 
+
 ## Benefits
 
 - You only need the name of the plan, the person's name, and a start & end date.
@@ -28,6 +28,8 @@ In IntelliJ or Android Studio, you can find this under Settings>Build,Execution,
 - No need to calculate the X,Y / row,colum
 - Pannable in X and Y
 - Optimized for best performance
+- Multiple items are merged in a single row.
+
 
 # Usage
 
@@ -38,6 +40,7 @@ In IntelliJ or Android Studio, you can find this under Settings>Build,Execution,
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"/>
 ```
+
 
 ###2. Implement your class with IGridItem
 
@@ -76,12 +79,14 @@ public class EmployeePlanItem implements IGridItem
 }
 ```
 
+
 ###3. Fill the table with data
 
 ```java
 timeTable = (TimeTable) findViewById(R.id.time_table);
 timeTable.setItems(generateSamplePlanData());
 ```
+
 
 ## Dependencies
 
