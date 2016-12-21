@@ -1,6 +1,8 @@
 package com.greasemonk.timetable;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.View;
 
 /**
  * Interface for your plan item.
@@ -28,9 +30,28 @@ public interface IGridItem
 	String getName();
 	
 	/**
+	 * Get the text that is displayed in the tile's second row.
+	 * 
+	 * @return the secondary
+	 */
+	String getSecondaryName();
+	
+	/**
 	 * Get the text that is displayed on the Y axis.
 	 * 
 	 * @return the text that is displayed on the Y axis
 	 */
 	String getPersonName();
+	
+	/**
+	 * Get the item's color.
+	 * 
+	 * @return the color of the item
+	 */
+	int getItemColor();
+	
+	/**
+	 * Executed when the user clicked on the item.
+	 */
+	void onClick(View view);
 }

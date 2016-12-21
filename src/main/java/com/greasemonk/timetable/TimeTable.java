@@ -23,7 +23,7 @@ import java.util.*;
  * Created by Wiebe Geertsma on 14-11-2016.
  * E-mail: e.w.geertsma@gmail.com
  */
-public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGuideYItem> extends FrameLayout
+public class TimeTable extends FrameLayout
 {
 	private final String DTAG = "TimeTable";
 	
@@ -91,7 +91,7 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 	 * 
 	 * @param items the items to be displayed.
 	 */
-	public void setItems(@NonNull List<T> items)
+	public <T extends IGridItem> void setItems(@NonNull List<T> items)
 	{
 		if(left == null || right == null)
 		{
@@ -108,7 +108,7 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 			itemsX.add(new GuideXItem(current.millisOfDay().addToCopy(1)));
 			current = current.dayOfYear().addToCopy(1);
 		}
-		setGuideXItems((List<X>) itemsX);
+		setGuideXItems(itemsX);
 		final int columns = timeRange.getColumnCount();
 		construct(columns);
 		
@@ -163,7 +163,7 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 			recyclerView.setAdapter(gridAdapter);
 		}
 		
-		setGuideYItems((List<Y>) itemsY);
+		setGuideYItems(itemsY);
 		gridAdapter.set(allGridItems);
 		requestLayout();
 	}
@@ -268,6 +268,8 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 				state = newState;
 			}
 		});
+		
+		
 	}
 	
 	/**
@@ -290,7 +292,7 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 		this.timeRange = new TimeRange(new DateTime(left), new DateTime(right));
 	}
 	
-	public void setGuideXItems(List<X> items)
+	public <T extends IGuideXItem> void setGuideXItems(List<T> items)
 	{
 		if(guideXadapter == null)
 		{
@@ -304,7 +306,7 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 		guideXadapter.set(items);
 	}
 	
-	public void setGuideYItems(List<Y> items)
+	public <T extends IGuideYItem> void setGuideYItems(List<T> items)
 	{
 		if(guideYadapter == null)
 		{

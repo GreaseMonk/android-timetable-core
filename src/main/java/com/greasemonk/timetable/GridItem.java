@@ -1,6 +1,15 @@
 package com.greasemonk.timetable;
 
-import android.graphics.Color;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
@@ -15,22 +24,22 @@ import java.util.List;
  */
 public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 {
-	private final IGridItem item;
+	private final IGridItem model;
 	private final int row;
 	private final int column;
-	private boolean isStart;
+	private boolean isStart, isToday;
 	
 	public GridItem(int row, int column)
 	{
 		// Make a blank item
-		item = null;
+		model = null;
 		this.row = row;
 		this.column = column;
 	}
 	
-	public GridItem(IGridItem item, int row, int column)
+	public <T extends IGridItem> GridItem(T model, int row, int column)
 	{
-		this.item = item;
+		this.model = model;
 		this.row = row;
 		this.column = column;
 	}
@@ -64,15 +73,29 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 			params.row = row;
 			holder.itemView.setLayoutParams(params);
 		}
-		if(item != null)
-		{
-			holder.textView.setText(item.getName());
-			holder.textView.setBackgroundColor(Color.argb(25, 0,0,255));
-		}
+		
+		holder.textView.setText(model != null ? model.getName() : "");
+		holder.textView2.setText(model != null ? model.getSecondaryName() : "");
+		
+		if(model != null && model.getItemColor() != -1)
+			holder.itemView.setBackground(
+					getTintedDrawable(
+							holder.itemView.getContext(), 
+							holder.itemView.getResources().getDrawable(isToday ? R.drawable.item_today_bg : R.drawable.item_bg),
+							holder.itemView.getResources().getColor(R.color.today_color)));
 		else
+			holder.itemView.setBackgroundResource(isToday ? R.drawable.item_today_bg : R.drawable.item_bg);
+		
+		if(model != null)
 		{
-			holder.textView.setText("");
-			holder.textView.setBackgroundResource(R.drawable.item_bg);
+			holder.itemView.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View view)
+				{
+					model.onClick(view);
+				}
+			});
 		}
 	}
 	
@@ -86,20 +109,31 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 		isStart = start;
 	}
 	
+	public boolean isToday()
+	{
+		return isToday;
+	}
+	
+	public void setIsToday(boolean today)
+	{
+		isToday = today;
+	}
+	
 	protected static class ViewHolder extends RecyclerView.ViewHolder
 	{
-		protected TextView textView;
+		protected TextView textView, textView2;
 		
 		public ViewHolder(View view)
 		{
 			super(view);
 			this.textView = (TextView) view.findViewById(R.id.text1);
+			this.textView2 = (TextView) view.findViewById(R.id.text2);
 		}
 	}
 	
-	public IGridItem getItem()
+	public IGridItem getModel()
 	{
-		return item;
+		return model;
 	}
 	
 	public int getRow()
@@ -114,6 +148,21 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 	
 	public boolean isEmpty()
 	{
-		return item == null;
+		return model == null;
+	}
+	
+	public static Drawable getTintedDrawableOfColorResId(@NonNull Context context, @NonNull Bitmap inputBitmap, @ColorRes int colorResId) {
+		return getTintedDrawable(context, new BitmapDrawable(context.getResources(), inputBitmap), ContextCompat.getColor(context, colorResId));
+	}
+	
+	public static Drawable getTintedDrawable(@NonNull Context context, @NonNull Bitmap inputBitmap, @ColorInt int color) {
+		return getTintedDrawable(context, new BitmapDrawable(context.getResources(), inputBitmap), color);
+	}
+	
+	public static Drawable getTintedDrawable(@NonNull Context context, @NonNull Drawable inputDrawable, @ColorInt int color) {
+		Drawable wrapDrawable = DrawableCompat.wrap(inputDrawable);
+		DrawableCompat.setTint(wrapDrawable, color);
+		DrawableCompat.setTintMode(wrapDrawable, PorterDuff.Mode.SRC_IN);
+		return wrapDrawable;
 	}
 }
