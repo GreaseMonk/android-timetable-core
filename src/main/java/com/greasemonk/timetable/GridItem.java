@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
@@ -66,7 +67,8 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 	public void bindView(GridItem.ViewHolder holder, List payloads)
 	{
 		super.bindView(holder, payloads);
-		if(holder.itemView.getLayoutParams() != null)
+		
+		if (holder.itemView.getLayoutParams() != null)
 		{
 			LayoutParams params = new LayoutParams(holder.itemView.getLayoutParams());
 			params.column = column;
@@ -77,16 +79,31 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 		holder.textView.setText(model != null ? model.getName() : "");
 		holder.textView2.setText(model != null ? model.getSecondaryName() : "");
 		
-		if(model != null && model.getItemColor() != -1)
+		/*if (model != null)
+		{
+			int resolvedColor = model.getItemColor() != -1 ? model.getItemColor() : holder.itemView.getResources().getColor(R.color.today_color);
+			
 			holder.itemView.setBackground(
 					getTintedDrawable(
-							holder.itemView.getContext(), 
+							holder.itemView.getContext(),
 							holder.itemView.getResources().getDrawable(isToday ? R.drawable.item_today_bg : R.drawable.item_bg),
-							holder.itemView.getResources().getColor(R.color.today_color)));
+							isToday ? 0 : resolvedColor));
+		}
+		else
+			*/
+		if(model != null && model.getItemColor() != -1)
+		{
+			Drawable drawable = ContextCompat.getDrawable(holder.itemView.getContext(), isToday ? R.drawable.item_today_bg : R.drawable.item_bg).mutate();
+			
+			Drawable wrapDrawable = DrawableCompat.wrap(drawable);
+			DrawableCompat.setTint(wrapDrawable, model.getItemColor());
+			DrawableCompat.setTintMode(wrapDrawable, PorterDuff.Mode.SRC_IN);
+			holder.itemView.setBackground(wrapDrawable);
+		}
 		else
 			holder.itemView.setBackgroundResource(isToday ? R.drawable.item_today_bg : R.drawable.item_bg);
 		
-		if(model != null)
+		if (model != null)
 		{
 			holder.itemView.setOnClickListener(new View.OnClickListener()
 			{
@@ -151,15 +168,18 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 		return model == null;
 	}
 	
-	public static Drawable getTintedDrawableOfColorResId(@NonNull Context context, @NonNull Bitmap inputBitmap, @ColorRes int colorResId) {
+	public static Drawable getTintedDrawableOfColorResId(@NonNull Context context, @NonNull Bitmap inputBitmap, @ColorRes int colorResId)
+	{
 		return getTintedDrawable(context, new BitmapDrawable(context.getResources(), inputBitmap), ContextCompat.getColor(context, colorResId));
 	}
 	
-	public static Drawable getTintedDrawable(@NonNull Context context, @NonNull Bitmap inputBitmap, @ColorInt int color) {
+	public static Drawable getTintedDrawable(@NonNull Context context, @NonNull Bitmap inputBitmap, int color)
+	{
 		return getTintedDrawable(context, new BitmapDrawable(context.getResources(), inputBitmap), color);
 	}
 	
-	public static Drawable getTintedDrawable(@NonNull Context context, @NonNull Drawable inputDrawable, @ColorInt int color) {
+	public static Drawable getTintedDrawable(@NonNull Context context, @NonNull Drawable inputDrawable, int color)
+	{
 		Drawable wrapDrawable = DrawableCompat.wrap(inputDrawable);
 		DrawableCompat.setTint(wrapDrawable, color);
 		DrawableCompat.setTintMode(wrapDrawable, PorterDuff.Mode.SRC_IN);

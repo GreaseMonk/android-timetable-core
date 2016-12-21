@@ -328,4 +328,12 @@ public class TimeTable extends FrameLayout
 	{
 		return right;
 	}
+	
+	public void center()
+	{
+		if(recyclerView != null && gridAdapter != null && gridAdapter.getItemCount() > 0)
+		{
+			recyclerView.smoothScrollToPosition(gridAdapter.getItemCount()/2 + 1);
+		}
+	}
 }
