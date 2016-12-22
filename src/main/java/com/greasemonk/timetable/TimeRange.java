@@ -1,8 +1,6 @@
 package com.greasemonk.timetable;
 
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -13,24 +11,30 @@ import java.util.Date;
  */
 public class TimeRange
 {
-	private DateTime start, end;
+	private Calendar start, end;
 	
-	public TimeRange(DateTime start, DateTime end)
+	public TimeRange(Calendar start, Calendar end)
 	{
-		this.start = start;
-		this.end = end;
+		this.start = Calendar.getInstance();
+		this.end = Calendar.getInstance();
+		this.start.setTimeInMillis(start.getTimeInMillis());
+		this.end.setTimeInMillis(end.getTimeInMillis());
 	}
 	
 	public TimeRange(Date start, Date end)
 	{
-		this.start = new DateTime(start);
-		this.end = new DateTime(end);
+		this.start = Calendar.getInstance();
+		this.start.setTime(start);
+		this.end = Calendar.getInstance();
+		this.end.setTime(end);
 	}
 	
 	public TimeRange(long millisStart, long millisEnd)
 	{
-		this.start = new DateTime(millisStart);
-		this.end = new DateTime(millisEnd);
+		this.start = Calendar.getInstance();
+		this.start.setTimeInMillis(millisStart);
+		this.end = Calendar.getInstance();
+		this.end.setTimeInMillis(millisEnd);
 	}
 	
 	/**
@@ -41,35 +45,44 @@ public class TimeRange
 	 */
 	public final boolean overlaps(TimeRange other)
 	{
-		return start.getMillis() <= other.getEnd().getMillis() && end.getMillis() >= other.getStart().getMillis();
+		return start.getTimeInMillis() <= other.getEnd().getTimeInMillis() && end.getTimeInMillis() >= other.getStart().getTimeInMillis();
 	}
 	
-	public final boolean isWithin(DateTime time)
+	public final boolean isWithin(Calendar time)
 	{
-		return time.getMillis() >= start.millisOfDay().setCopy(0).getMillis() && time.getMillis() <= end.millisOfDay().setCopy(0).getMillis();
+		
+		return time.getTimeInMillis() >= start.getTimeInMillis() && time.getTimeInMillis() <= end.getTimeInMillis();
 	}
 	
 	public final int getColumnCount()
 	{
-		return Days.daysBetween(start, end).getDays();
+		Calendar current = Calendar.getInstance();
+		current.setTimeInMillis(start.getTimeInMillis());
+		int days = 0;
+		while(current.getTimeInMillis() < end.getTimeInMillis())
+		{
+			current.add(Calendar.DATE, 1);
+			days++;
+		}
+		return days;
 	}
 	
-	public DateTime getStart()
+	public Calendar getStart()
 	{
 		return start;
 	}
 	
-	public void setStart(DateTime start)
+	public void setStart(Calendar start)
 	{
 		this.start = start;
 	}
 	
-	public DateTime getEnd()
+	public Calendar getEnd()
 	{
 		return end;
 	}
 	
-	public void setEnd(DateTime end)
+	public void setEnd(Calendar end)
 	{
 		this.end = end;
 	}

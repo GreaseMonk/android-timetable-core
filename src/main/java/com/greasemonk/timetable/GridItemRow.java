@@ -1,9 +1,7 @@
 package com.greasemonk.timetable;
 
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -96,7 +94,9 @@ public class GridItemRow<T extends IGridItem>
 		
 		for (int y = 0; y < itemsList.size(); y++)
 		{
-			DateTime cellTime = timeRange.getStart().dayOfYear().addToCopy(1).millisOfDay().setCopy(0);
+			Calendar cellTime = Calendar.getInstance();
+			cellTime.setTimeInMillis(timeRange.getStart().getTimeInMillis());
+			cellTime.add(Calendar.DATE, 1);
 			
 			for (int x = 0; x < columns; x++)
 			{
@@ -118,13 +118,13 @@ public class GridItemRow<T extends IGridItem>
 					GridItem lastItem = gridItems.get((y * columns) + x - 1);
 					gridItem.setStart(lastItem.isEmpty() || !gridItem.getModel().equals(lastItem.getModel()));
 				}
-				if ((cellTime.toLocalDate()).equals(new LocalDate()))
+				if (compareDates(cellTime, Calendar.getInstance()))
 				{
 					gridItem.setIsToday(true);
 				}
 				
 				gridItems.add(gridItem);
-				cellTime = cellTime.dayOfYear().addToCopy(1);
+				cellTime.add(Calendar.DATE, 1);
 			}
 		}
 		
@@ -134,5 +134,23 @@ public class GridItemRow<T extends IGridItem>
 	public String getPersonName()
 	{
 		return personName;
+	}
+	
+	/**
+	 * Compare two dates, and check if they are the same.
+	 * Only checks year, month, day.
+	 * 
+	 * @return TRUE if the dates are the same.
+	 */
+	public static boolean compareDates(Calendar left, Calendar right)
+	{
+		if(left.get(Calendar.YEAR) != right.get(Calendar.YEAR))
+			return false;
+		if(left.get(Calendar.MONTH) != right.get(Calendar.MONTH))
+			return false;
+		if(left.get(Calendar.DAY_OF_MONTH) != right.get(Calendar.DAY_OF_MONTH))
+			return false;
+		
+		return true;
 	}
 }

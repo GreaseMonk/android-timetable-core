@@ -97,7 +97,7 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 			
 			Drawable wrapDrawable = DrawableCompat.wrap(drawable);
 			DrawableCompat.setTint(wrapDrawable, model.getItemColor());
-			DrawableCompat.setTintMode(wrapDrawable, PorterDuff.Mode.SRC_IN);
+			DrawableCompat.setTintMode(wrapDrawable, PorterDuff.Mode.OVERLAY);
 			holder.itemView.setBackground(wrapDrawable);
 		}
 		else

@@ -15,7 +15,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
 import com.mikepenz.fastadapter.adapters.FastItemAdapter;
-import org.joda.time.*;
 
 import java.util.*;
 
@@ -29,7 +28,7 @@ public class TimeTable extends FrameLayout
 	
 	private RecyclerView recyclerView, guideY, guideX;
 	private List<RecyclerView> observedList;
-	private DateTime left, right;
+	private Calendar left, right;
 	private TimeRange timeRange;
 	
 	private FastItemAdapter guideXadapter, guideYadapter, gridAdapter;
@@ -95,18 +94,23 @@ public class TimeTable extends FrameLayout
 	{
 		if(left == null || right == null)
 		{
-			left = DateTime.now().monthOfYear().addToCopy(-1).millisOfDay().setCopy(0);
-			right = DateTime.now().monthOfYear().addToCopy(1).dayOfYear().addToCopy(-1).millisOfDay().setCopy(0);
+			left = Calendar.getInstance();
+			left.add(Calendar.MONTH, -1);
+			left.setTimeInMillis(calendarToMidnightMillis(left));
+			right = Calendar.getInstance();
+			right.add(Calendar.MONTH, 1);
+			right.setTimeInMillis(calendarToMidnightMillis(right));
 			setTimeRange(left, right);
 		}
 		
 		// Generate items spanning from start(left) to end(right)
-		DateTime current = left.millisOfDay().addToCopy(1);
+		Calendar current = Calendar.getInstance();
+		current.setTimeInMillis(calendarToMidnightMillis(left));
 		List<GuideXItem> itemsX = new ArrayList<>();
-		while(current.getMillis() < right.getMillis())
+		while(current.getTimeInMillis() <= right.getTimeInMillis())
 		{
-			itemsX.add(new GuideXItem(current.millisOfDay().addToCopy(1)));
-			current = current.dayOfYear().addToCopy(1);
+			itemsX.add(new GuideXItem(current));
+			current.add(Calendar.DATE, 1);
 		}
 		setGuideXItems(itemsX);
 		final int columns = timeRange.getColumnCount();
@@ -278,9 +282,9 @@ public class TimeTable extends FrameLayout
 	 * @param left the time on the left end
 	 * @param right the time on the right end
 	 */
-	public void setTimeRange(DateTime left, DateTime right)
+	public void setTimeRange(Calendar left, Calendar right)
 	{
-		if(left.getMillis() > right.getMillis())
+		if(left.getTimeInMillis() > right.getTimeInMillis())
 		{
 			Log.e(DTAG, "setTimeRange 'left' cannot be higher than 'right'.");
 			return;
@@ -289,7 +293,7 @@ public class TimeTable extends FrameLayout
 		this.left = left;
 		this.right = right;
 		
-		this.timeRange = new TimeRange(new DateTime(left), new DateTime(right));
+		this.timeRange = new TimeRange(left, right);
 	}
 	
 	public <T extends IGuideXItem> void setGuideXItems(List<T> items)
@@ -319,12 +323,12 @@ public class TimeTable extends FrameLayout
 		guideYadapter.set(items);
 	}
 	
-	public DateTime getTimeLeft()
+	public Calendar getTimeLeft()
 	{
 		return left;
 	}
 	
-	public DateTime getTimeRight()
+	public Calendar getTimeRight()
 	{
 		return right;
 	}
@@ -335,5 +339,13 @@ public class TimeTable extends FrameLayout
 		{
 			recyclerView.smoothScrollToPosition(gridAdapter.getItemCount()/2 + 1);
 		}
+	}
+	
+	private static long calendarToMidnightMillis(Calendar calendar)
+	{
+		Calendar c = Calendar.getInstance();
+		c.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), 0,0,0);
+		
+		return calendar.getTimeInMillis();
 	}
 }
