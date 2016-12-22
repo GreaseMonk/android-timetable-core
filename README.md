@@ -45,7 +45,10 @@ In IntelliJ or Android Studio, you can find this under Settings>Build,Execution,
 ```
 
 
-###2. Implement your class with IGridItem
+###2. Implement your class with IGridItem (or extend [AbstractGridItem](https://github.com/GreaseMonk/android-timetable/blob/develop/app/src/main/java/com/greasemonk/timetable/app/EmployeePlanItem.java) )
+
+Refer to the [Demo Activity](https://github.com/GreaseMonk/android-timetable/blob/develop/app/src/main/java/com/greasemonk/timetable/app/MainActivity.java) and [Demo PlanItem class](https://github.com/GreaseMonk/android-timetable/blob/develop/app/src/main/java/com/greasemonk/timetable/app/EmployeePlanItem.java) for detailed instructions.
+
 
 ```java
 public class EmployeePlanItem implements IGridItem
