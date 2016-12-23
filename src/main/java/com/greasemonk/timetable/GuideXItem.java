@@ -28,10 +28,12 @@ public class GuideXItem extends AbstractItem<GuideXItem, GuideXItem.ViewHolder> 
 	{
 		this.time = Calendar.getInstance();
 		this.time.setTimeInMillis(time.getTimeInMillis());
-		String weekNumber = (this.time.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY ? "Wk." + Integer.toString(this.time.get(Calendar.WEEK_OF_YEAR)) : "") + "\n";
+		boolean isMonday = this.time.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY;
+		boolean isFirstDayOfMonth = time.get(Calendar.DAY_OF_MONTH) == 1;
+		String weekNumber = (isMonday ? "Wk." + Integer.toString(this.time.get(Calendar.WEEK_OF_YEAR)) : "") + "\n";
 		String date = getDateString() + "\n";
 		String day = getDayString();
-		text = (time.get(Calendar.WEEK_OF_YEAR) == 1 && time.get(Calendar.DAY_OF_MONTH) == 1 ? Integer.toString(time.get(Calendar.YEAR)) + "\n" : weekNumber) + date + day;
+		text = (isFirstDayOfMonth && !isMonday ? Integer.toString(time.get(Calendar.YEAR)) + "\n" : weekNumber) + date + day;
 	}
 	
 	public Calendar getDateTime()
@@ -60,11 +62,7 @@ public class GuideXItem extends AbstractItem<GuideXItem, GuideXItem.ViewHolder> 
 		holder.date.setText(text);
 		holder.date.setTypeface(null, Typeface.BOLD);
 		
-		Drawable drawable = ContextCompat.getDrawable(holder.itemView.getContext(), isToday() ? R.drawable.item_today_bg : R.drawable.item_guide_bg).mutate();
-		Drawable wrapDrawable = DrawableCompat.wrap(drawable);
-		DrawableCompat.setTint(wrapDrawable, Color.WHITE);
-		DrawableCompat.setTintMode(wrapDrawable, PorterDuff.Mode.OVERLAY);
-		holder.itemView.setBackground(wrapDrawable);
+		holder.itemView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), isToday() ? R.drawable.item_today_bg : R.drawable.item_guide_bg));
 	}
 	
 	@Override

@@ -90,9 +90,7 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 			*/
 		if(model != null)
 		{
-			Drawable drawable = ContextCompat.getDrawable(
-					holder.itemView.getContext(),
-					isToday ? R.drawable.item_today_bg : R.drawable.item_bg).mutate();
+			Drawable drawable = ContextCompat.getDrawable(holder.itemView.getContext(), isToday ? R.drawable.item_today_bg : R.drawable.item_bg).mutate();
 			
 			if(!isToday)
 			{
@@ -101,12 +99,6 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 				DrawableCompat.setTintMode(wrapDrawable, PorterDuff.Mode.OVERLAY);
 				holder.itemView.setBackground(wrapDrawable);
 			}
-		}
-		else
-			holder.itemView.setBackgroundResource(isToday ? R.drawable.item_today_bg : isWeekend ? R.drawable.item_weekend_bg : R.drawable.item_bg);
-		
-		if (model != null)
-		{
 			holder.itemView.setOnClickListener(new View.OnClickListener()
 			{
 				@Override
@@ -116,6 +108,8 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 				}
 			});
 		}
+		else
+			holder.itemView.setBackgroundResource(isToday ? R.drawable.item_today_bg : isWeekend ? R.drawable.item_weekend_bg : R.drawable.item_bg);
 	}
 	
 	public boolean isStart()
@@ -177,23 +171,5 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 	public boolean isEmpty()
 	{
 		return model == null;
-	}
-	
-	public static Drawable getTintedDrawableOfColorResId(@NonNull Context context, @NonNull Bitmap inputBitmap, @ColorRes int colorResId)
-	{
-		return getTintedDrawable(context, new BitmapDrawable(context.getResources(), inputBitmap), ContextCompat.getColor(context, colorResId));
-	}
-	
-	public static Drawable getTintedDrawable(@NonNull Context context, @NonNull Bitmap inputBitmap, int color)
-	{
-		return getTintedDrawable(context, new BitmapDrawable(context.getResources(), inputBitmap), color);
-	}
-	
-	public static Drawable getTintedDrawable(@NonNull Context context, @NonNull Drawable inputDrawable, int color)
-	{
-		Drawable wrapDrawable = DrawableCompat.wrap(inputDrawable);
-		DrawableCompat.setTint(wrapDrawable, color);
-		DrawableCompat.setTintMode(wrapDrawable, PorterDuff.Mode.SRC_IN);
-		return wrapDrawable;
 	}
 }

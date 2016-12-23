@@ -66,6 +66,13 @@ public class TimeTable extends FrameLayout
 		guideY = (RecyclerView) view.findViewById(R.id.guideY);
 		guideX = (RecyclerView) view.findViewById(R.id.guideX);
 		
+		guideY.setHasFixedSize(true);
+		guideY.setItemAnimator(null);
+		guideX.setHasFixedSize(true);
+		guideX.setItemAnimator(null);
+		recyclerView.setHasFixedSize(true);
+		recyclerView.setItemAnimator(null);
+		
 		/*if (attrs != null)
 		{
 			TypedArray typedArray = getContext().getTheme().obtainStyledAttributes(
@@ -215,7 +222,6 @@ public class TimeTable extends FrameLayout
 		FixedGridLayoutManager mgr = new FixedGridLayoutManager();
 		mgr.setTotalColumnCount(itemCount);
 		recyclerView.setLayoutManager(mgr);
-		recyclerView.setItemAnimator(new DefaultItemAnimator());
 		recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
 		{
 			int state;
@@ -356,9 +362,9 @@ public class TimeTable extends FrameLayout
 	
 	public void center()
 	{
-		if(guideX != null && guideXadapter != null && guideXadapter.getItemCount() > 0)
+		if(recyclerView != null && gridAdapter != null && gridAdapter.getItemCount() > 0)
 		{
-			guideX.scrollToPosition(((gridAdapter.getItemCount() / columns) / 2) - 2);
+			recyclerView.scrollToPosition(((gridAdapter.getItemCount() / columns) / 2));
 		}
 	}
 	

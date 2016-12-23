@@ -31,12 +31,7 @@ public class GuideYItem extends AbstractItem<GuideYItem, GuideYItem.ViewHolder> 
 		super.bindView(holder, payloads);
 		
 		holder.name.setText(getName());
-		
-		Drawable drawable = ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.item_guide_bg).mutate();
-		Drawable wrapDrawable = DrawableCompat.wrap(drawable);
-		DrawableCompat.setTint(wrapDrawable, Color.WHITE);
-		DrawableCompat.setTintMode(wrapDrawable, PorterDuff.Mode.OVERLAY);
-		holder.itemView.setBackground(wrapDrawable);
+		holder.itemView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.item_guide_bg));
 	}
 	
 	@Override
