@@ -122,6 +122,8 @@ public class GridItemRow<T extends IGridItem>
 				{
 					gridItem.setIsToday(true);
 				}
+				if(cellTime.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || cellTime.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
+					gridItem.setIsWeekend(true);
 				
 				gridItems.add(gridItem);
 				cellTime.add(Calendar.DATE, 1);

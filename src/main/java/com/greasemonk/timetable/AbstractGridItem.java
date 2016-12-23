@@ -1,8 +1,10 @@
 package com.greasemonk.timetable;
 
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import com.mikepenz.fastadapter.items.AbstractItem;
 
 /**
@@ -11,7 +13,7 @@ import com.mikepenz.fastadapter.items.AbstractItem;
  */
 public abstract class AbstractGridItem<T extends AbstractGridItem<?,?>, VH extends RecyclerView.ViewHolder> implements IGridItem
 {
-	private int itemColor = -1;
+	private int itemColor = Color.parseColor("#1EFFD900");
 	
 	/**
 	 * If the TimeRange is null, your item will NOT be displayed.
@@ -61,7 +63,7 @@ public abstract class AbstractGridItem<T extends AbstractGridItem<?,?>, VH exten
 	/**
 	 * Executed when the user clicked on the item.
 	 */
-	public void onClick()
+	public void onClick(View view)
 	{
 		// Do nothing. Override me! 
 	}

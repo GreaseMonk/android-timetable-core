@@ -30,13 +30,6 @@ public interface IGridItem
 	String getName();
 	
 	/**
-	 * Get the text that is displayed in the tile's second row.
-	 * 
-	 * @return the secondary
-	 */
-	String getSecondaryName();
-	
-	/**
 	 * Get the text that is displayed on the Y axis.
 	 * 
 	 * @return the text that is displayed on the Y axis

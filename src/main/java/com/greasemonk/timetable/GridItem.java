@@ -5,8 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -28,7 +26,7 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 	private final IGridItem model;
 	private final int row;
 	private final int column;
-	private boolean isStart, isToday;
+	private boolean isStart, isToday, isWeekend;
 	
 	public GridItem(int row, int column)
 	{
@@ -60,7 +58,7 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 	@Override
 	public int getLayoutRes()
 	{
-		return R.layout.item_1;
+		return R.layout.item_grid;
 	}
 	
 	@Override
@@ -76,8 +74,7 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 			holder.itemView.setLayoutParams(params);
 		}
 		
-		holder.textView.setText(model != null ? model.getName() : "");
-		holder.textView2.setText(model != null ? model.getSecondaryName() : "");
+		holder.textView.setText(model != null && isStart ? model.getName() : "");
 		
 		/*if (model != null)
 		{
@@ -91,17 +88,22 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 		}
 		else
 			*/
-		if(model != null && model.getItemColor() != -1)
+		if(model != null)
 		{
-			Drawable drawable = ContextCompat.getDrawable(holder.itemView.getContext(), isToday ? R.drawable.item_today_bg : R.drawable.item_bg).mutate();
+			Drawable drawable = ContextCompat.getDrawable(
+					holder.itemView.getContext(),
+					isToday ? R.drawable.item_today_bg : R.drawable.item_bg).mutate();
 			
-			Drawable wrapDrawable = DrawableCompat.wrap(drawable);
-			DrawableCompat.setTint(wrapDrawable, model.getItemColor());
-			DrawableCompat.setTintMode(wrapDrawable, PorterDuff.Mode.OVERLAY);
-			holder.itemView.setBackground(wrapDrawable);
+			if(!isToday)
+			{
+				Drawable wrapDrawable = DrawableCompat.wrap(drawable);
+				DrawableCompat.setTint(wrapDrawable, model.getItemColor());
+				DrawableCompat.setTintMode(wrapDrawable, PorterDuff.Mode.OVERLAY);
+				holder.itemView.setBackground(wrapDrawable);
+			}
 		}
 		else
-			holder.itemView.setBackgroundResource(isToday ? R.drawable.item_today_bg : R.drawable.item_bg);
+			holder.itemView.setBackgroundResource(isToday ? R.drawable.item_today_bg : isWeekend ? R.drawable.item_weekend_bg : R.drawable.item_bg);
 		
 		if (model != null)
 		{
@@ -138,14 +140,23 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 	
 	protected static class ViewHolder extends RecyclerView.ViewHolder
 	{
-		protected TextView textView, textView2;
+		protected TextView textView;
 		
 		public ViewHolder(View view)
 		{
 			super(view);
 			this.textView = (TextView) view.findViewById(R.id.text1);
-			this.textView2 = (TextView) view.findViewById(R.id.text2);
 		}
+	}
+	
+	public boolean getIsWeekend()
+	{
+		return isWeekend;
+	}
+	
+	public void setIsWeekend(boolean weekend)
+	{
+		isWeekend = weekend;
 	}
 	
 	public IGridItem getModel()

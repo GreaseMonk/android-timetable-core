@@ -1,5 +1,10 @@
 package com.greasemonk.timetable;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
@@ -26,6 +31,12 @@ public class GuideYItem extends AbstractItem<GuideYItem, GuideYItem.ViewHolder> 
 		super.bindView(holder, payloads);
 		
 		holder.name.setText(getName());
+		
+		Drawable drawable = ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.item_guide_bg).mutate();
+		Drawable wrapDrawable = DrawableCompat.wrap(drawable);
+		DrawableCompat.setTint(wrapDrawable, Color.WHITE);
+		DrawableCompat.setTintMode(wrapDrawable, PorterDuff.Mode.OVERLAY);
+		holder.itemView.setBackground(wrapDrawable);
 	}
 	
 	@Override
@@ -43,7 +54,7 @@ public class GuideYItem extends AbstractItem<GuideYItem, GuideYItem.ViewHolder> 
 	@Override
 	public int getLayoutRes()
 	{
-		return R.layout.item_1;
+		return R.layout.item_guide_y;
 	}
 	
 	@Override

@@ -1,6 +1,8 @@
 package com.greasemonk.timetable;
 
+import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -20,15 +22,16 @@ import java.util.Locale;
 public class GuideXItem extends AbstractItem<GuideXItem, GuideXItem.ViewHolder> implements IGuideXItem
 {
 	private Calendar time;
-	private String date = "";
-	private String day = "";
+	private final String text;
 	
 	public GuideXItem(Calendar time)
 	{
 		this.time = Calendar.getInstance();
 		this.time.setTimeInMillis(time.getTimeInMillis());
-		date = getDateString();
-		day = getDayString();
+		String weekNumber = (this.time.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY ? "Wk." + Integer.toString(this.time.get(Calendar.WEEK_OF_YEAR)) : "") + "\n";
+		String date = getDateString() + "\n";
+		String day = getDayString();
+		text = (time.get(Calendar.WEEK_OF_YEAR) == 1 && time.get(Calendar.DAY_OF_MONTH) == 1 ? Integer.toString(time.get(Calendar.YEAR)) + "\n" : weekNumber) + date + day;
 	}
 	
 	public Calendar getDateTime()
@@ -54,18 +57,20 @@ public class GuideXItem extends AbstractItem<GuideXItem, GuideXItem.ViewHolder> 
 	{
 		super.bindView(holder, payloads);
 		
-		holder.date.setText(date);
-		holder.day.setText(day);
+		holder.date.setText(text);
+		holder.date.setTypeface(null, Typeface.BOLD);
 		
-		Drawable drawable = ContextCompat.getDrawable(holder.itemView.getContext(), isToday() ? R.drawable.item_today_bg : R.drawable.item_bg).mutate();
+		Drawable drawable = ContextCompat.getDrawable(holder.itemView.getContext(), isToday() ? R.drawable.item_today_bg : R.drawable.item_guide_bg).mutate();
 		Drawable wrapDrawable = DrawableCompat.wrap(drawable);
+		DrawableCompat.setTint(wrapDrawable, Color.WHITE);
+		DrawableCompat.setTintMode(wrapDrawable, PorterDuff.Mode.OVERLAY);
 		holder.itemView.setBackground(wrapDrawable);
 	}
 	
 	@Override
 	public String getDayString()
 	{
-		return time.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault());
+		return time.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault()).toUpperCase();
 	}
 	
 	@Override
@@ -83,19 +88,17 @@ public class GuideXItem extends AbstractItem<GuideXItem, GuideXItem.ViewHolder> 
 	@Override
 	public int getLayoutRes()
 	{
-		return R.layout.item_1;
+		return R.layout.item_guide_x;
 	}
 	
 	protected static class ViewHolder extends RecyclerView.ViewHolder
 	{
 		protected TextView date;
-		protected TextView day;
 		
 		public ViewHolder(View view)
 		{
 			super(view);
 			this.date = (TextView) view.findViewById(R.id.text1);
-			this.day = (TextView) view.findViewById(R.id.text2);
 		}
 	}
 	

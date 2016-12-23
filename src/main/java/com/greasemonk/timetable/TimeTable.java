@@ -30,6 +30,7 @@ public class TimeTable extends FrameLayout
 	private List<RecyclerView> observedList;
 	private Calendar left, right;
 	private TimeRange timeRange;
+	private int columns;
 	
 	private FastItemAdapter guideXadapter, guideYadapter, gridAdapter;
 	
@@ -113,7 +114,7 @@ public class TimeTable extends FrameLayout
 			current.add(Calendar.DATE, 1);
 		}
 		setGuideXItems(itemsX);
-		final int columns = timeRange.getColumnCount();
+		columns = timeRange.getColumnCount();
 		construct(columns);
 		
 		List<Pair<String, List<IGridItem>>> pairs = new ArrayList<>();
@@ -170,13 +171,12 @@ public class TimeTable extends FrameLayout
 		setGuideYItems(itemsY);
 		gridAdapter.set(allGridItems);
 		requestLayout();
+		center();
 	}
 	
 	private void construct(final int itemCount)
 	{
-		guideX.setHasFixedSize(true);
-		guideX.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-		guideX.addOnItemTouchListener(new RecyclerView.OnItemTouchListener()
+		final RecyclerView.OnItemTouchListener itemTouchListener = new RecyclerView.OnItemTouchListener()
 		{
 			@Override
 			public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e)
@@ -187,7 +187,7 @@ public class TimeTable extends FrameLayout
 			@Override
 			public void onTouchEvent(RecyclerView rv, MotionEvent e)
 			{
-				
+				// Do nothing.
 			}
 			
 			@Override
@@ -195,30 +195,16 @@ public class TimeTable extends FrameLayout
 			{
 				
 			}
-		});
+		};
+		guideX.setHasFixedSize(true);
+		guideX.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+		// Do not allow scrolling with the X or Y for now because we do not have a scrollToPositionWithOffset yet in our FixedGridLayout
+		guideX.addOnItemTouchListener(itemTouchListener);
 		
 		guideY.setHasFixedSize(true);
 		guideY.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-		guideY.addOnItemTouchListener(new RecyclerView.OnItemTouchListener()
-		{
-			@Override
-			public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e)
-			{
-				return true;
-			}
-			
-			@Override
-			public void onTouchEvent(RecyclerView rv, MotionEvent e)
-			{
-				
-			}
-			
-			@Override
-			public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept)
-			{
-				
-			}
-		});
+		// Do not allow scrolling with the X or Y for now because we do not have a scrollToPositionWithOffset yet in our FixedGridLayout
+		guideY.addOnItemTouchListener(itemTouchListener);
 		
 		observedList = new ArrayList<RecyclerView>()
 		{{
@@ -273,6 +259,41 @@ public class TimeTable extends FrameLayout
 			}
 		});
 		
+		// TODO
+		/*guideY.addOnScrollListener(new RecyclerView.OnScrollListener()
+		{
+			int state;
+			
+			@Override
+			public void onScrolled(RecyclerView rv, int dx, int dy)
+			{
+				super.onScrolled(recyclerView, dx, dy);
+				if (state == RecyclerView.SCROLL_STATE_IDLE)
+				{
+					return;
+				}
+				
+				final LinearLayoutManager managerY = (LinearLayoutManager) rv.getLayoutManager();
+				final FixedGridLayoutManager layoutMgr = (FixedGridLayoutManager) recyclerView.getLayoutManager();
+				
+				final int firstRow = managerY.findFirstVisibleItemPosition();
+				
+				View firstVisibleItem = layoutMgr.getChildAt(0);
+				if (firstVisibleItem != null)
+				{
+					int decoratedY = managerY.getDecoratedBottom(firstVisibleItem);
+					layoutMgr.scroll((firstRow + 1) * columns);
+				}
+				
+			}
+			
+			@Override
+			public void onScrollStateChanged(RecyclerView recyclerView, int newState)
+			{
+				super.onScrollStateChanged(recyclerView, newState);
+				state = newState;
+			}
+		});*/
 		
 	}
 	
@@ -335,9 +356,9 @@ public class TimeTable extends FrameLayout
 	
 	public void center()
 	{
-		if(recyclerView != null && gridAdapter != null && gridAdapter.getItemCount() > 0)
+		if(guideX != null && guideXadapter != null && guideXadapter.getItemCount() > 0)
 		{
-			recyclerView.smoothScrollToPosition(gridAdapter.getItemCount()/2 + 1);
+			guideX.scrollToPosition(((gridAdapter.getItemCount() / columns) / 2) - 2);
 		}
 	}
 	
