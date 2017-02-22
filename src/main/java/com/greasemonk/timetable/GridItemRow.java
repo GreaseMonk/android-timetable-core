@@ -1,21 +1,20 @@
 package com.greasemonk.timetable;
 
-import org.joda.time.DateTime;
-
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
  * Created by Wiebe Geertsma on 13-12-2016.
  * E-mail: e.w.geertsma@gmail.com
  */
-public class GridItemRow
+public class GridItemRow<T extends IGridItem>
 {
 	private final TimeRange timeRange;
 	private final String personName;
 	private final List<GridItem> items;
 	
-	public GridItemRow(final String personName, final TimeRange timeRange, final List<IGridItem> containedItems)
+	public GridItemRow(final String personName, final TimeRange timeRange, final List<T> containedItems)
 	{
 		this.timeRange = timeRange; // We need to keep track of the time range of this row so we can display the current day
 		this.personName = personName;
@@ -40,21 +39,23 @@ public class GridItemRow
 	 * @param list the unsorted list of IGridItems
 	 * @return the list of
 	 */
-	private static List<List<IGridItem>> fitItems(List<IGridItem> list)
+	private static <T extends IGridItem> List<List<T>> fitItems(List<T> list)
 	{
-		List<List<IGridItem>> sortedList = new ArrayList<>();
-		sortedList.add(new ArrayList<IGridItem>()); // Add the initial item
+		List<List<T>> sortedList = new ArrayList<>();
+		sortedList.add(new ArrayList<T>()); // Add the initial item
 		
 		// Cycle until there are no more items left
-		for (IGridItem item : list)
+		for (T item : list)
 		{
 			boolean wasAdded = true;
-			for (List<IGridItem> currentRowList : sortedList)
+			for (List<T> currentRowList : sortedList)
 			{
 				boolean fitsInCurrentRow = true;
 				for (IGridItem rowItem : currentRowList) // Check if there are overlapping items in this row
 				{
-					if (item.getTimeRange().overlaps(rowItem.getTimeRange()))
+					if (item.getTimeRange() != null &&
+							rowItem.getTimeRange() != null &&
+							item.getTimeRange().overlaps(rowItem.getTimeRange()))
 					{
 						fitsInCurrentRow = false;
 						break;
@@ -68,7 +69,7 @@ public class GridItemRow
 			}
 			if (!wasAdded)
 			{
-				List<IGridItem> newList = new ArrayList<>();
+				List<T> newList = new ArrayList<>();
 				newList.add(item);
 				sortedList.add(newList);
 			}
@@ -86,21 +87,23 @@ public class GridItemRow
 	 * @param timeRange the time range (start to end) of this row.
 	 * @return the generated list of GridItems ready to display in the RecyclerView.
 	 */
-	private static List<GridItem> generateGridItems(final List<List<IGridItem>> itemsList, final TimeRange timeRange)
+	private static <T extends IGridItem> List<GridItem> generateGridItems(final List<List<T>> itemsList, final TimeRange timeRange)
 	{
 		final int columns = timeRange.getColumnCount();
 		List<GridItem> gridItems = new ArrayList<>();
 		
 		for (int y = 0; y < itemsList.size(); y++)
 		{
-			DateTime cellTime = timeRange.getStart().dayOfYear().addToCopy(1).millisOfDay().setCopy(0);
+			Calendar cellTime = Calendar.getInstance();
+			cellTime.setTimeInMillis(timeRange.getStart().getTimeInMillis());
+			cellTime.add(Calendar.DATE, 1);
 			
 			for (int x = 0; x < columns; x++)
 			{
 				GridItem gridItem = null;
-				for (IGridItem item : itemsList.get(y))
+				for (T item : itemsList.get(y))
 				{
-					if(item.getTimeRange() == null)
+					if (item.getTimeRange() == null)
 						continue; // Skip any items that have null start or end date.
 					if (item.getTimeRange().isWithin(cellTime))
 					{
@@ -113,11 +116,17 @@ public class GridItemRow
 				else if (!gridItems.isEmpty() && gridItems.size() > 0)
 				{
 					GridItem lastItem = gridItems.get((y * columns) + x - 1);
-					gridItem.setStart(lastItem.isEmpty() || !gridItem.getItem().equals(lastItem.getItem()));
+					gridItem.setStart(lastItem.isEmpty() || !gridItem.getModel().equals(lastItem.getModel()));
 				}
+				if (compareDates(cellTime, Calendar.getInstance()))
+				{
+					gridItem.setIsToday(true);
+				}
+				if(cellTime.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || cellTime.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
+					gridItem.setIsWeekend(true);
 				
 				gridItems.add(gridItem);
-				cellTime = cellTime.dayOfYear().addToCopy(1);
+				cellTime.add(Calendar.DATE, 1);
 			}
 		}
 		
@@ -127,5 +136,23 @@ public class GridItemRow
 	public String getPersonName()
 	{
 		return personName;
+	}
+	
+	/**
+	 * Compare two dates, and check if they are the same.
+	 * Only checks year, month, day.
+	 * 
+	 * @return TRUE if the dates are the same.
+	 */
+	public static boolean compareDates(Calendar left, Calendar right)
+	{
+		if(left.get(Calendar.YEAR) != right.get(Calendar.YEAR))
+			return false;
+		if(left.get(Calendar.MONTH) != right.get(Calendar.MONTH))
+			return false;
+		if(left.get(Calendar.DAY_OF_MONTH) != right.get(Calendar.DAY_OF_MONTH))
+			return false;
+		
+		return true;
 	}
 }

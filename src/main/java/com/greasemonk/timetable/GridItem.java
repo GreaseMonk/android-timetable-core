@@ -1,6 +1,14 @@
 package com.greasemonk.timetable;
 
-import android.graphics.Color;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
@@ -15,22 +23,22 @@ import java.util.List;
  */
 public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 {
-	private final IGridItem item;
+	private final IGridItem model;
 	private final int row;
 	private final int column;
-	private boolean isStart;
+	private boolean isStart, isToday, isWeekend;
 	
 	public GridItem(int row, int column)
 	{
 		// Make a blank item
-		item = null;
+		model = null;
 		this.row = row;
 		this.column = column;
 	}
 	
-	public GridItem(IGridItem item, int row, int column)
+	public <T extends IGridItem> GridItem(T model, int row, int column)
 	{
-		this.item = item;
+		this.model = model;
 		this.row = row;
 		this.column = column;
 	}
@@ -50,30 +58,58 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 	@Override
 	public int getLayoutRes()
 	{
-		return R.layout.item_1;
+		return R.layout.item_grid;
 	}
 	
 	@Override
 	public void bindView(GridItem.ViewHolder holder, List payloads)
 	{
 		super.bindView(holder, payloads);
-		if(holder.itemView.getLayoutParams() != null)
+		
+		if (holder.itemView.getLayoutParams() != null)
 		{
 			LayoutParams params = new LayoutParams(holder.itemView.getLayoutParams());
 			params.column = column;
 			params.row = row;
 			holder.itemView.setLayoutParams(params);
 		}
-		if(item != null)
+		
+		holder.textView.setText(model != null && isStart ? model.getName() : "");
+		
+		/*if (model != null)
 		{
-			holder.textView.setText(item.getName());
-			holder.textView.setBackgroundColor(Color.argb(25, 0,0,255));
+			int resolvedColor = model.getItemColor() != -1 ? model.getItemColor() : holder.itemView.getResources().getColor(R.color.today_color);
+			
+			holder.itemView.setBackground(
+					getTintedDrawable(
+							holder.itemView.getContext(),
+							holder.itemView.getResources().getDrawable(isToday ? R.drawable.item_today_bg : R.drawable.item_bg),
+							isToday ? 0 : resolvedColor));
 		}
 		else
+			*/
+		if(model != null)
 		{
-			holder.textView.setText("");
-			holder.textView.setBackgroundResource(R.drawable.item_bg);
+			Drawable drawable = ContextCompat.getDrawable(holder.itemView.getContext(), isToday ? R.drawable.item_today_bg : R.drawable.item_bg).mutate();
+			
+			if(!isToday)
+			{
+				Drawable wrapDrawable = DrawableCompat.wrap(drawable);
+				DrawableCompat.setTint(wrapDrawable, model.getItemColor());
+				DrawableCompat.setTintMode(wrapDrawable, PorterDuff.Mode.OVERLAY);
+				holder.itemView.setBackground(wrapDrawable);
+			}
+			holder.itemView.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View view)
+				{
+					model.onClick(view);
+				}
+			});
 		}
+		else
+			holder.itemView.setBackgroundResource(isToday ? R.drawable.item_today_bg : isWeekend ? R.drawable.item_weekend_bg : R.drawable.item_bg);
 	}
 	
 	public boolean isStart()
@@ -84,6 +120,16 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 	public void setStart(boolean start)
 	{
 		isStart = start;
+	}
+	
+	public boolean isToday()
+	{
+		return isToday;
+	}
+	
+	public void setIsToday(boolean today)
+	{
+		isToday = today;
 	}
 	
 	protected static class ViewHolder extends RecyclerView.ViewHolder
@@ -97,9 +143,19 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 		}
 	}
 	
-	public IGridItem getItem()
+	public boolean getIsWeekend()
 	{
-		return item;
+		return isWeekend;
+	}
+	
+	public void setIsWeekend(boolean weekend)
+	{
+		isWeekend = weekend;
+	}
+	
+	public IGridItem getModel()
+	{
+		return model;
 	}
 	
 	public int getRow()
@@ -114,6 +170,6 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 	
 	public boolean isEmpty()
 	{
-		return item == null;
+		return model == null;
 	}
 }

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -14,8 +13,7 @@ import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
-import com.mikepenz.fastadapter.adapters.FastItemAdapter;
-import org.joda.time.*;
+import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
 
 import java.util.*;
 
@@ -23,14 +21,15 @@ import java.util.*;
  * Created by Wiebe Geertsma on 14-11-2016.
  * E-mail: e.w.geertsma@gmail.com
  */
-public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGuideYItem> extends FrameLayout
+public class TimeTable extends FrameLayout
 {
 	private final String DTAG = "TimeTable";
 	
 	private RecyclerView recyclerView, guideY, guideX;
 	private List<RecyclerView> observedList;
-	private DateTime left, right;
+	private Calendar left, right;
 	private TimeRange timeRange;
+	private int columns;
 	
 	private FastItemAdapter guideXadapter, guideYadapter, gridAdapter;
 	
@@ -66,6 +65,13 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 		guideY = (RecyclerView) view.findViewById(R.id.guideY);
 		guideX = (RecyclerView) view.findViewById(R.id.guideX);
 		
+		guideY.setHasFixedSize(true);
+		guideY.setItemAnimator(null);
+		guideX.setHasFixedSize(true);
+		guideX.setItemAnimator(null);
+		recyclerView.setHasFixedSize(true);
+		recyclerView.setItemAnimator(null);
+		
 		/*if (attrs != null)
 		{
 			TypedArray typedArray = getContext().getTheme().obtainStyledAttributes(
@@ -91,25 +97,30 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 	 * 
 	 * @param items the items to be displayed.
 	 */
-	public void setItems(@NonNull List<T> items)
+	public <T extends IGridItem> void setItems(@NonNull List<T> items)
 	{
 		if(left == null || right == null)
 		{
-			left = DateTime.now().monthOfYear().addToCopy(-1).millisOfDay().setCopy(0);
-			right = DateTime.now().monthOfYear().addToCopy(1).dayOfYear().addToCopy(-1).millisOfDay().setCopy(0);
+			left = Calendar.getInstance();
+			left.add(Calendar.MONTH, -1);
+			left.setTimeInMillis(calendarToMidnightMillis(left));
+			right = Calendar.getInstance();
+			right.add(Calendar.MONTH, 1);
+			right.setTimeInMillis(calendarToMidnightMillis(right));
 			setTimeRange(left, right);
 		}
 		
 		// Generate items spanning from start(left) to end(right)
-		DateTime current = left.millisOfDay().addToCopy(1);
+		Calendar current = Calendar.getInstance();
+		current.setTimeInMillis(calendarToMidnightMillis(left));
 		List<GuideXItem> itemsX = new ArrayList<>();
-		while(current.getMillis() < right.getMillis())
+		while(current.getTimeInMillis() <= right.getTimeInMillis())
 		{
-			itemsX.add(new GuideXItem(current.millisOfDay().addToCopy(1)));
-			current = current.dayOfYear().addToCopy(1);
+			itemsX.add(new GuideXItem(current));
+			current.add(Calendar.DATE, 1);
 		}
-		setGuideXItems((List<X>) itemsX);
-		final int columns = timeRange.getColumnCount();
+		setGuideXItems(itemsX);
+		columns = timeRange.getColumnCount();
 		construct(columns);
 		
 		List<Pair<String, List<IGridItem>>> pairs = new ArrayList<>();
@@ -163,16 +174,15 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 			recyclerView.setAdapter(gridAdapter);
 		}
 		
-		setGuideYItems((List<Y>) itemsY);
+		setGuideYItems(itemsY);
 		gridAdapter.set(allGridItems);
 		requestLayout();
+		center();
 	}
 	
 	private void construct(final int itemCount)
 	{
-		guideX.setHasFixedSize(true);
-		guideX.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-		guideX.addOnItemTouchListener(new RecyclerView.OnItemTouchListener()
+		final RecyclerView.OnItemTouchListener itemTouchListener = new RecyclerView.OnItemTouchListener()
 		{
 			@Override
 			public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e)
@@ -183,7 +193,7 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 			@Override
 			public void onTouchEvent(RecyclerView rv, MotionEvent e)
 			{
-				
+				// Do nothing.
 			}
 			
 			@Override
@@ -191,30 +201,16 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 			{
 				
 			}
-		});
+		};
+		guideX.setHasFixedSize(true);
+		guideX.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+		// Do not allow scrolling with the X or Y for now because we do not have a scrollToPositionWithOffset yet in our FixedGridLayout
+		guideX.addOnItemTouchListener(itemTouchListener);
 		
 		guideY.setHasFixedSize(true);
 		guideY.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-		guideY.addOnItemTouchListener(new RecyclerView.OnItemTouchListener()
-		{
-			@Override
-			public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e)
-			{
-				return true;
-			}
-			
-			@Override
-			public void onTouchEvent(RecyclerView rv, MotionEvent e)
-			{
-				
-			}
-			
-			@Override
-			public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept)
-			{
-				
-			}
-		});
+		// Do not allow scrolling with the X or Y for now because we do not have a scrollToPositionWithOffset yet in our FixedGridLayout
+		guideY.addOnItemTouchListener(itemTouchListener);
 		
 		observedList = new ArrayList<RecyclerView>()
 		{{
@@ -225,7 +221,6 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 		FixedGridLayoutManager mgr = new FixedGridLayoutManager();
 		mgr.setTotalColumnCount(itemCount);
 		recyclerView.setLayoutManager(mgr);
-		recyclerView.setItemAnimator(new DefaultItemAnimator());
 		recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
 		{
 			int state;
@@ -268,6 +263,43 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 				state = newState;
 			}
 		});
+		
+		// TODO
+		/*guideY.addOnScrollListener(new RecyclerView.OnScrollListener()
+		{
+			int state;
+			
+			@Override
+			public void onScrolled(RecyclerView rv, int dx, int dy)
+			{
+				super.onScrolled(recyclerView, dx, dy);
+				if (state == RecyclerView.SCROLL_STATE_IDLE)
+				{
+					return;
+				}
+				
+				final LinearLayoutManager managerY = (LinearLayoutManager) rv.getLayoutManager();
+				final FixedGridLayoutManager layoutMgr = (FixedGridLayoutManager) recyclerView.getLayoutManager();
+				
+				final int firstRow = managerY.findFirstVisibleItemPosition();
+				
+				View firstVisibleItem = layoutMgr.getChildAt(0);
+				if (firstVisibleItem != null)
+				{
+					int decoratedY = managerY.getDecoratedBottom(firstVisibleItem);
+					layoutMgr.scroll((firstRow + 1) * columns);
+				}
+				
+			}
+			
+			@Override
+			public void onScrollStateChanged(RecyclerView recyclerView, int newState)
+			{
+				super.onScrollStateChanged(recyclerView, newState);
+				state = newState;
+			}
+		});*/
+		
 	}
 	
 	/**
@@ -276,9 +308,9 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 	 * @param left the time on the left end
 	 * @param right the time on the right end
 	 */
-	public void setTimeRange(DateTime left, DateTime right)
+	public void setTimeRange(Calendar left, Calendar right)
 	{
-		if(left.getMillis() > right.getMillis())
+		if(left.getTimeInMillis() > right.getTimeInMillis())
 		{
 			Log.e(DTAG, "setTimeRange 'left' cannot be higher than 'right'.");
 			return;
@@ -287,10 +319,10 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 		this.left = left;
 		this.right = right;
 		
-		this.timeRange = new TimeRange(new DateTime(left), new DateTime(right));
+		this.timeRange = new TimeRange(left, right);
 	}
 	
-	public void setGuideXItems(List<X> items)
+	public <T extends IGuideXItem> void setGuideXItems(List<T> items)
 	{
 		if(guideXadapter == null)
 		{
@@ -304,7 +336,7 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 		guideXadapter.set(items);
 	}
 	
-	public void setGuideYItems(List<Y> items)
+	public <T extends IGuideYItem> void setGuideYItems(List<T> items)
 	{
 		if(guideYadapter == null)
 		{
@@ -317,13 +349,29 @@ public class TimeTable<T extends IGridItem, X extends IGuideXItem, Y extends IGu
 		guideYadapter.set(items);
 	}
 	
-	public DateTime getTimeLeft()
+	public Calendar getTimeLeft()
 	{
 		return left;
 	}
 	
-	public DateTime getTimeRight()
+	public Calendar getTimeRight()
 	{
 		return right;
+	}
+	
+	public void center()
+	{
+		if(recyclerView != null && gridAdapter != null && gridAdapter.getItemCount() > 0)
+		{
+			recyclerView.scrollToPosition(((gridAdapter.getItemCount() / columns) / 2));
+		}
+	}
+	
+	private static long calendarToMidnightMillis(Calendar calendar)
+	{
+		Calendar c = Calendar.getInstance();
+		c.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), 0,0,0);
+		
+		return calendar.getTimeInMillis();
 	}
 }

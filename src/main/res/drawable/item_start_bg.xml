@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<rotate xmlns:android="http://schemas.android.com/apk/res/android"
+        android:fromDegrees="90"
+        android:toDegrees="90">
+    <layer-list>
+        <item android:gravity="top">
+            <shape android:shape="line" >
+                <stroke android:width="2dp"
+                        android:color="@android:color/black"
+                        android:dashWidth="2dp"
+                        android:dashGap="2dp"/>
+            </shape>
+        </item>
+        <item android:gravity="bottom">
+            <shape android:shape="line" >
+                <stroke android:width="2dp"
+                        android:color="@android:color/black"
+                        android:dashWidth="2dp"
+                        android:dashGap="2dp"/>
+            </shape>
+        </item>
+    </layer-list>
+</rotate>
