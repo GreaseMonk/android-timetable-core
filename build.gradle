@@ -54,12 +54,13 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:25.1.0'
-    compile 'com.android.support:support-annotations:25.1.0'
-    compile 'com.android.support:recyclerview-v7:25.1.0'
+    compile 'com.android.support:appcompat-v7:25.1.1'
+    compile 'com.android.support:support-annotations:25.1.1'
+    compile 'com.android.support:recyclerview-v7:25.1.1'
 
     // https://github.com/mikepenz/fastadapter
-    compile('com.mikepenz:fastadapter:1.8.2@aar') { transitive = true }
+    compile('com.mikepenz:fastadapter:2.1.7@aar') { transitive = true }
+    compile 'com.mikepenz:fastadapter-commons:2.1.0@aar'
 }
 
 buildscript {

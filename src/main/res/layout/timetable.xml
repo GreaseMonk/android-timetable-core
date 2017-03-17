@@ -119,16 +119,16 @@
     <View style="@style/divider" android:layout_below="@id/group1"/>-->
 
     <android.support.v7.widget.RecyclerView android:layout_width="match_parent"
-                                                 android:layout_height="wrap_content"
-                                                 android:minHeight="48dp"
-                                                 android:id="@+id/guideX"
-                                                 android:layout_marginLeft="48dp"
-                                                 android:layout_marginStart="48dp"
-                                                 android:layout_alignParentTop="true"
-                                                 android:layout_alignParentLeft="true"
-                                                 android:layout_alignParentStart="true"
-                                                 android:layout_alignParentEnd="true"
-                                                 android:layout_alignParentRight="true"/>
+                                            android:layout_height="wrap_content"
+                                            android:minHeight="48dp"
+                                            android:id="@+id/guideX"
+                                            android:layout_marginLeft="48dp"
+                                            android:layout_marginStart="48dp"
+                                            android:layout_alignParentTop="true"
+                                            android:layout_alignParentLeft="true"
+                                            android:layout_alignParentStart="true"
+                                            android:layout_alignParentEnd="true"
+                                            android:layout_alignParentRight="true"/>
     <android.support.v7.widget.RecyclerView android:layout_width="wrap_content"
                                             android:layout_height="match_parent"
                                             android:layout_below="@id/guideX"
@@ -144,7 +144,7 @@
                                             android:layout_below="@id/guideX"
                                             android:layout_toRightOf="@+id/guideY"
                                             android:layout_toEndOf="@+id/guideY"/>
-    
+
 
     <!--<ProgressBar android:id="@+id/progress_bar"
                  android:indeterminate="true"
