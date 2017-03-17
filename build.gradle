@@ -83,5 +83,5 @@ task javadoc(type: Javadoc){
 
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
-apply from: 'https://raw.githubusercontent.com/GreaseMonk/JCenter/master/installv1.gradle'
-apply from: 'https://raw.githubusercontent.com/GreaseMonk/JCenter/master/bintrayv1.gradle'
+//apply from: 'https://raw.githubusercontent.com/GreaseMonk/JCenter/master/installv1.gradle'
+//apply from: 'https://raw.githubusercontent.com/GreaseMonk/JCenter/master/bintrayv1.gradle'
