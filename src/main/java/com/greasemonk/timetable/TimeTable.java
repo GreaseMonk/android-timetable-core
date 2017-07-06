@@ -229,10 +229,6 @@ public class TimeTable extends FrameLayout
 			public void onScrolled(RecyclerView recyclerView, int dx, int dy)
 			{
 				super.onScrolled(recyclerView, dx, dy);
-				if (state == RecyclerView.SCROLL_STATE_IDLE)
-				{
-					return;
-				}
 				
 				final LinearLayoutManager managerX = (LinearLayoutManager) observedList.get(0).getLayoutManager();
 				final LinearLayoutManager managerY = (LinearLayoutManager) observedList.get(1).getLayoutManager();
