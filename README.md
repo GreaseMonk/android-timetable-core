@@ -1,7 +1,6 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.greasemonk/timetable/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.github.greasemonk/timetable) [![API](https://img.shields.io/badge/API-16%2B-yellow.svg?style=flat)](https://android-arsenal.com/api?level=16)
 android-timetable-core
 ===================
-(PLEASE SEND ME YOUR PULL REQUESTS, ALL WELCOME! :-) )
 
 A timetable designed for planning employees to projects.
 
@@ -9,8 +8,21 @@ A timetable designed for planning employees to projects.
 ![Demo gif](https://github.com/GreaseMonk/android-timetable-core/blob/develop/images/giphy_1.gif) 
 
 
+# Contribute
+This timetable needs to have modifications to the layout manager code that makes it possible to span cells over multiple columns.
+How do you contribute ?
+- Fork the repository
+- Coffee
+- Code
+- Commit
+- Send me your pull request
+- Commits are reviewed before approval
+
+Requests and tips are welcome, please open an issue for your questions.
+
 # Installation
 
+(Please check the versions to make sure you have the latest, updating maven could take a bit)
 Include the following in your build.gradle as a dependency:
 
 ```gradle
