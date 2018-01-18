@@ -56,6 +56,12 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 	}
 	
 	@Override
+	public ViewHolder getViewHolder(View v)
+	{
+		return new ViewHolder(v);
+	}
+	
+	@Override
 	public int getLayoutRes()
 	{
 		return R.layout.item_grid;

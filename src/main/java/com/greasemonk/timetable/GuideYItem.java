@@ -47,6 +47,12 @@ public class GuideYItem extends AbstractItem<GuideYItem, GuideYItem.ViewHolder> 
 	}
 	
 	@Override
+	public ViewHolder getViewHolder(View v)
+	{
+		return new ViewHolder(v);
+	}
+	
+	@Override
 	public int getLayoutRes()
 	{
 		return R.layout.item_guide_y;
