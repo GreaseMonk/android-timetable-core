@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static java.util.Calendar.*;
+
 /**
  * Created by Wiebe Geertsma on 13-12-2016.
  * E-mail: e.w.geertsma@gmail.com
@@ -97,6 +99,10 @@ public class GridItemRow<T extends IGridItem>
 			Calendar cellTime = Calendar.getInstance();
 			cellTime.setTimeInMillis(timeRange.getStart().getTimeInMillis());
 			cellTime.add(Calendar.DATE, 1);
+			cellTime.set(HOUR_OF_DAY, 0);
+			cellTime.set(MINUTE, 0);
+			cellTime.set(SECOND, 0);
+			cellTime.set(MILLISECOND, 0);
 			
 			for (int x = 0; x < columns; x++)
 			{

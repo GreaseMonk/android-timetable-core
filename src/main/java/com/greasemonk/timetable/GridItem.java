@@ -94,17 +94,14 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 		}
 		else
 			*/
+
+		Drawable drawable = ContextCompat.getDrawable(holder.itemView.getContext(), isToday ? R.drawable.item_today_bg : isWeekend ? R.drawable.item_weekend_bg : R.drawable.item_bg).mutate();
+		Drawable wrapDrawable = DrawableCompat.wrap(drawable);
+		
 		if(model != null)
 		{
-			Drawable drawable = ContextCompat.getDrawable(holder.itemView.getContext(), isToday ? R.drawable.item_today_bg : R.drawable.item_bg).mutate();
-			
-			if(!isToday)
-			{
-				Drawable wrapDrawable = DrawableCompat.wrap(drawable);
-				DrawableCompat.setTint(wrapDrawable, model.getItemColor());
-				DrawableCompat.setTintMode(wrapDrawable, PorterDuff.Mode.OVERLAY);
-				holder.itemView.setBackground(wrapDrawable);
-			}
+		    DrawableCompat.setTint(wrapDrawable, model.getItemColor());
+		    DrawableCompat.setTintMode(wrapDrawable, PorterDuff.Mode.OVERLAY);
 			holder.itemView.setOnClickListener(new View.OnClickListener()
 			{
 				@Override
@@ -114,8 +111,9 @@ public class GridItem extends AbstractItem<GridItem, GridItem.ViewHolder>
 				}
 			});
 		}
-		else
-			holder.itemView.setBackgroundResource(isToday ? R.drawable.item_today_bg : isWeekend ? R.drawable.item_weekend_bg : R.drawable.item_bg);
+		holder.itemView.setBackground(wrapDrawable);
+		
+		
 	}
 	
 	public boolean isStart()
