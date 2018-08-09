@@ -3,6 +3,8 @@ package com.greasemonk.timetable;
 import java.util.Calendar;
 import java.util.Date;
 
+import static java.util.Calendar.*;
+
 /**
  * Class to hold two simple dates so all the time handling can be done here
  * 
@@ -50,8 +52,17 @@ public class TimeRange
 	
 	public final boolean isWithin(Calendar time)
 	{
-		
-		return time.getTimeInMillis() >= start.getTimeInMillis() && time.getTimeInMillis() <= end.getTimeInMillis();
+		return time.getTimeInMillis() >= calendarToMidnightMillis(start) && time.getTimeInMillis() <= end.getTimeInMillis();
+	}
+
+	private static long calendarToMidnightMillis(Calendar calendar)
+	{
+		calendar.set(HOUR_OF_DAY, 0);
+		calendar.set(MINUTE, 0);
+		calendar.set(SECOND, 0);
+		calendar.set(MILLISECOND, 0);
+
+		return calendar.getTimeInMillis();
 	}
 	
 	public final int getColumnCount()
