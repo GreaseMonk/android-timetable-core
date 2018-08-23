@@ -64,8 +64,11 @@ public class GridItemRow<T extends IGridItem>
 					}
 				}
 				
-				if (fitsInCurrentRow)
+				if (fitsInCurrentRow) {
+					wasAdded = true;
 					currentRowList.add(item);
+					break;
+				}
 				else
 					wasAdded = false;
 			}
