@@ -7,6 +7,10 @@ A timetable designed for planning employees to projects.
 [Click here to download the demo APK](https://github.com/GreaseMonk/android-timetable-core/blob/develop/apk/20-12-2016_app-debug-v1.0.1-DEBUG-c101.apk)  
 ![Demo gif](https://github.com/GreaseMonk/android-timetable-core/blob/develop/images/giphy_1.gif) 
 
+# 7 Nov 2018 UPDATE
+As you have noticed, there was not a lot of updating recently. However i am working on a kotlin project that might be replacing the current project, that is controlled with an near-infinite view pager. You will no longer be able to scroll horizontally AND vertically, but this will open up a lot of roads for further development of the project.
+
+This is primarily because i have no intention of working on a layout manager, because this is difficult work and will give further complications later on, such as adding scrollbars and the sort.
 
 # Contribute
 This timetable needs to have modifications to the layout manager code that makes it possible to span cells over multiple columns.
